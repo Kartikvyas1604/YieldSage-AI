@@ -11,31 +11,10 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 px-4">
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-accent-blue rounded-full opacity-30"
-            animate={{
-              x: [
-                Math.random() * window.innerWidth,
-                Math.random() * window.innerWidth,
-              ],
-              y: [
-                Math.random() * window.innerHeight,
-                Math.random() * window.innerHeight,
-              ],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 10 + Math.random() * 20,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-        ))}
-      </div>
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary opacity-50" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(59,125,216,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(201,168,76,0.1),transparent_50%)]" />
 
       <div className="relative z-10 max-w-7xl mx-auto text-center">
         {/* Badge */}
@@ -47,7 +26,7 @@ export function HeroSection() {
         >
           <Sparkles size={16} className="text-accent-gold-bright" />
           <span className="font-mono text-sm text-accent-gold-bright">
-            World's First On-Chain Credit Score on Solana
+            World&apos;s First On-Chain Credit Score on Solana
           </span>
         </motion.div>
 
@@ -70,7 +49,7 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="font-body text-xl md:text-2xl text-text-secondary mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          The world's first AI credit score on Solana. Prove your trustworthiness.
+          The world&apos;s first AI credit score on Solana. Prove your trustworthiness.
           Unlock undercollateralized lending.
         </motion.p>
 

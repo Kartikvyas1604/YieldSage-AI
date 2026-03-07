@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Unlock, TrendingUp, ArrowRight } from 'lucide-react';
+import { Lock, Unlock, ArrowRight } from 'lucide-react';
 import { GlowCard } from '@/components/ui/GlowCard';
 
 export function ProblemSection() {

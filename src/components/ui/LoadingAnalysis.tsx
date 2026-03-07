@@ -24,7 +24,7 @@ export function LoadingAnalysis() {
         AI is analyzing your wallet...
       </h3>
       <p className="font-body text-text-secondary mb-8">
-        This may take a moment. We're reading your entire on-chain history.
+        This may take a moment. We&apos;re reading your entire on-chain history.
       </p>
 
       {/* Progress steps */}
