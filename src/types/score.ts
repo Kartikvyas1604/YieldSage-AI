@@ -5,11 +5,14 @@ export type ScoreTier = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'VERY_POOR';
 export interface CategoryScore {
   score: number;
   maxScore: number;
-  grade: string;
+  weight?: number;
+  grade?: string;
+  signals?: string[];
   trend?: 'up' | 'down' | 'stable';
 }
 
 export interface ScoreBreakdown {
+  [key: string]: CategoryScore;
   loanRepayment: CategoryScore;
   walletMaturity: CategoryScore;
   tradingBehavior: CategoryScore;
@@ -21,39 +24,43 @@ export interface RiskFlag {
   type: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   description: string;
-  impact: number;
-  detected: Date;
+  impact?: number;
+  detected?: Date;
 }
 
 export interface PositiveFactor {
-  type: string;
-  description: string;
-  impact: number;
-  category: string;
+  factor: string;
+  type?: string;
+  description?: string;
+  impact: string | number;
+  category?: string;
 }
 
 export interface AIReasoning {
-  step: string;
-  message: string;
+  step?: string;
+  message?: string;
+  reasoning?: string;
   impact: string;
   category: string;
-  timestamp?: Date;
+  timestamp?: number | Date;
 }
 
 export interface ImprovementTip {
   category: string;
-  currentState: string;
-  targetState: string;
-  estimatedImpact: number;
-  priority: 'high' | 'medium' | 'low';
-  actions: string[];
-  timeframe: string;
+  suggestion: string;
+  potentialGain: number;
+  currentState?: string;
+  targetState?: string;
+  estimatedImpact?: number;
+  priority?: 'high' | 'medium' | 'low';
+  actions?: string[];
+  timeframe?: string;
 }
 
 export interface ScoreHistory {
-  date: Date;
+  date: number | Date;
   score: number;
-  tier: ScoreTier;
+  tier?: ScoreTier;
   change: number;
 }
 
@@ -68,16 +75,20 @@ export interface CredScore {
   walletAddress: string;
   score: number;
   tier: ScoreTier;
-  breakdown: ScoreBreakdown;
+  categories?: Record<string, CategoryScore>;
+  breakdown?: ScoreBreakdown;
   riskFlags: RiskFlag[];
   positiveFactors: PositiveFactor[];
   aiReasoning: AIReasoning[];
   improvementTips: ImprovementTip[];
-  scoreHistory: ScoreHistory[];
-  benefitsUnlocked: BenefitUnlocked[];
-  lastUpdated: Date;
+  history?: ScoreHistory[];
+  scoreHistory?: ScoreHistory[];
+  benefits?: BenefitUnlocked[];
+  benefitsUnlocked?: BenefitUnlocked[];
+  timestamp?: number;
+  lastUpdated?: Date;
   credentialNFT?: string;
-  credentialMinted: boolean;
+  credentialMinted?: boolean;
 }
 
 export interface ScoreProjection {

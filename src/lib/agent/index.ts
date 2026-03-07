@@ -5,10 +5,10 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { CredScore } from "@/types/score";
-import { CREDCHAIN_SYSTEM_PROMPT, DEMO_MODE_CONTEXT } from "./prompts";
+import { CREDCHAIN_SYSTEM_PROMPT } from "./prompts";
 import { TOOL_DEFINITIONS, executeTool } from "./tools";
 import { calculateCredScore } from "./scoring";
-import { DEMO_WALLET_HISTORY, DEMO_CRED_SCORE } from "@/lib/data/mock";
+import { DEMO_CRED_SCORE } from "@/lib/data/mock";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || "",
@@ -89,7 +89,7 @@ Provide detailed reasoning for each category score.`,
       model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
       system: CREDCHAIN_SYSTEM_PROMPT,
-      tools: TOOL_DEFINITIONS as any,
+      tools: TOOL_DEFINITIONS as Anthropic.Tool[],
       messages,
     });
 
@@ -114,7 +114,7 @@ Provide detailed reasoning for each category score.`,
       // Execute the tool
       const toolResult = await executeTool(
         toolUseBlock.name,
-        toolUseBlock.input as Record<string, any>,
+        toolUseBlock.input as Record<string, unknown>,
         demoMode
       );
 
@@ -140,7 +140,7 @@ Provide detailed reasoning for each category score.`,
         model: "claude-sonnet-4-20250514",
         max_tokens: 4096,
         system: CREDCHAIN_SYSTEM_PROMPT,
-        tools: TOOL_DEFINITIONS as any,
+        tools: TOOL_DEFINITIONS as Anthropic.Tool[],
         messages,
       });
     }
@@ -182,7 +182,7 @@ Provide detailed reasoning for each category score.`,
           change: 0,
         },
       ],
-      benefits: [], // TODO: Calculate based on tier
+      benefits: [],
       aiReasoning: reasoningSteps.map((step) => ({
         category: step.category,
         reasoning: step.reasoning,

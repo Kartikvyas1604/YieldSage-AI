@@ -30,7 +30,7 @@ export async function GET(
       return NextResponse.json({
         score: DEMO_CRED_SCORE.score,
         tier: DEMO_CRED_SCORE.tier,
-        timestamp: DEMO_CRED_SCORE.timestamp,
+        timestamp: Date.now(),
         verified: true,
         demo: true,
       });

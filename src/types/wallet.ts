@@ -5,6 +5,8 @@ export interface LoanPosition {
   amount: number;
   currency: string;
   repaid: boolean;
+  status: 'active' | 'repaid' | 'liquidated';
+  borrowed: number;
   daysToRepay?: number;
   liquidated: boolean;
   liquidationDate?: Date;
@@ -18,6 +20,8 @@ export interface LPPosition {
   pair: string;
   durationDays: number;
   feesEarned: number;
+  currentValue: number;
+  impermanentLoss: number;
   startDate: Date;
   endDate?: Date;
   tvl?: number;
@@ -26,6 +30,11 @@ export interface LPPosition {
 
 export interface TradingStats {
   totalTrades: number;
+  winRate: number;
+  totalProfit: number;
+  totalVolume: number;
+  averageTradeSize: number;
+  avgHoldTime: number;
   washTradingDetected: boolean;
   rugPullParticipation: boolean;
   tokensCreated: number;
@@ -36,9 +45,11 @@ export interface TradingStats {
 }
 
 export interface GovernanceVote {
+  dao: string;
   protocol: string;
   proposalId: string;
   voteDate: Date;
+  timestamp: number;
   voteChoice: string;
   votingPower: number;
 }
@@ -56,7 +67,7 @@ export interface NFTHolding {
 export interface Transaction {
   signature: string;
   type: 'swap' | 'transfer' | 'loan' | 'lp' | 'governance' | 'nft' | 'other';
-  timestamp: Date;
+  timestamp: number;
   from: string;
   to: string;
   amount?: number;
@@ -73,13 +84,16 @@ export interface WalletActivity {
 }
 
 export interface WalletHistory {
+  walletAddress: string;
   address: string;
   displayName?: string;
   walletAge: number; // days since first transaction
   totalTransactions: number;
   loans: LoanPosition[];
   lpPositions: LPPosition[];
+  trading: TradingStats;
   tradingStats: TradingStats;
+  governance: GovernanceVote[];
   governanceVotes: GovernanceVote[];
   nftHoldings: NFTHolding[];
   transactions: Transaction[];

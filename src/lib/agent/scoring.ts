@@ -3,7 +3,7 @@
  * Implements the 20-signal scoring methodology across 5 categories
  */
 
-import { CredScore, CategoryScore, ScoreTier } from "@/types/score";
+import { CredScore, CategoryScore } from "@/types/score";
 import {
   WalletHistory,
   LoanPosition,

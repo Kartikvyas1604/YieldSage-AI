@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, score, metadata } = body;
+    const { walletAddress, score } = body;
 
     // Validate inputs
     if (!walletAddress || !validateSolanaAddress(walletAddress)) {
