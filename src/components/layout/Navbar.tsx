@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { ClientWalletButton } from '@/components/wallet/ClientWalletButton';
 import { Brain, Home } from 'lucide-react';
 
 export function Navbar() {
@@ -41,7 +41,7 @@ export function Navbar() {
             )}
             
             {/* Wallet Connect Button */}
-            <WalletMultiButton />
+            <ClientWalletButton />
           </div>
         </div>
       </div>
