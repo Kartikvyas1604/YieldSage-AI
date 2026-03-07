@@ -11,8 +11,18 @@ import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { DEMO_CRED_SCORE } from "@/lib/data/mock";
 
 // Generate mock history data
-const generateHistoryData = () => {
-  const history = [];
+const generateHistoryData = (): Array<{
+  date: string;
+  score: number;
+  change: number;
+  event: string | null;
+}> => {
+  const history: Array<{
+    date: string;
+    score: number;
+    change: number;
+    event: string | null;
+  }> = [];
   const monthsBack = 12;
   let currentScore = 742;
 
@@ -28,7 +38,7 @@ const generateHistoryData = () => {
     history.push({
       date: date.toISOString(),
       score: currentScore,
-      change: i === monthsBack ? 0 : history[history.length - 1]?.score ? currentScore - history[history.length - 1].score : 0,
+      change: i === monthsBack ? 0 : history[history.length - 1] ? currentScore - history[history.length - 1].score : 0,
       event: i === 3 ? "Repaid loan on Marginfi" : i === 7 ? "30-day LP streak" : null,
     });
   }

@@ -45,7 +45,7 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-2 text-text-muted text-sm">
             <Calendar size={14} />
-            Last updated: {formatDate(score.lastUpdated, true)}
+            Last updated: {score.lastUpdated ? formatDate(score.lastUpdated, true) : 'Never'}
           </div>
         </div>
 
@@ -65,9 +65,9 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 text-accent-green">
                   <TrendingUp size={20} />
                   <span className="font-mono text-lg font-bold">
-                    +{score.scoreHistory[score.scoreHistory.length - 1]?.change || 0}
+                    +{score.scoreHistory?.[score.scoreHistory.length - 1]?.change || 0}
                   </span>
-                  <span className="text   -text-secondary text-sm">this week</span>
+                  <span className="text-text-secondary text-sm">this week</span>
                 </div>
               </div>
 
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               </h3>
               
               <div className="space-y-4">
-                {Object.entries(score.breakdown).map(([key, category]) => {
+                {score.breakdown && Object.entries(score.breakdown).map(([key, category]) => {
                   const maxScore = CATEGORY_MAX_SCORES[key as keyof typeof CATEGORY_MAX_SCORES];
                   const percentage = (category.score / category.maxScore) * 100;
                   
@@ -159,7 +159,7 @@ export default function DashboardPage() {
               </h3>
               
               <div className="space-y-3">
-                {score.benefitsUnlocked.map((benefit, i) => (
+                {score.benefitsUnlocked?.map((benefit, i) => (
                   <div
                     key={i}
                     className="flex items-start gap-3 p-3 bg-bg-secondary rounded-lg border border-border hover:border-accent-green transition-colors"

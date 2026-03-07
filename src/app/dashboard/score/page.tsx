@@ -37,7 +37,7 @@ export default function ScoreDetailPage() {
                 Detailed analysis of your credit score components
               </p>
             </div>
-            <ScoreBadge score={score.score} tier={score.tier} size="large" />
+            <ScoreBadge score={score.score} size="large" />
           </div>
         </div>
 

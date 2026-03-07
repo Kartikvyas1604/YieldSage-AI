@@ -113,15 +113,17 @@ export function AIAnalysisStream({ reasoning, isStreaming = false }: AIAnalysisS
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="font-mono text-xs uppercase tracking-wider font-semibold"
-                        style={{ color }}
-                      >
-                        {entry.step.replace(/_/g, ' ')}
-                      </span>
+                      {entry.step && (
+                        <span
+                          className="font-mono text-xs uppercase tracking-wider font-semibold"
+                          style={{ color }}
+                        >
+                          {entry.step.replace(/_/g, ' ')}
+                        </span>
+                      )}
                       {entry.timestamp && (
                         <span className="font-mono text-xs text-text-muted">
-                          {formatRelativeTime(entry.timestamp)}
+                          {formatRelativeTime(typeof entry.timestamp === 'number' ? new Date(entry.timestamp) : entry.timestamp)}
                         </span>
                       )}
                     </div>
