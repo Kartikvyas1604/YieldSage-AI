@@ -11,7 +11,36 @@ const now = new Date();
 const daysAgo = (days: number) => new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 const monthsAgo = (months: number) => new Date(now.getTime() - months * 30 * 24 * 60 * 60 * 1000);
 
+// Trading stats for demo wallet
+const demoTradingStats: import('@/types/wallet').TradingStats = {
+  totalTrades: 234,
+  winRate: 0.71,
+  totalProfit: 28450,
+  totalVolume: 287450,
+  averageTradeSize: 1228,
+  avgHoldTime: 7.2,
+  washTradingDetected: false,
+  rugPullParticipation: false,
+  tokensCreated: 0,
+  averagePnl: "+12.4% monthly",
+  riskScore: "MEDIUM",
+  profitableTrades: 167,
+  losingTrades: 67,
+};
+
+// Governance votes for demo wallet
+const demoGovernanceVotes: import('@/types/wallet').GovernanceVote[] = Array.from({ length: 23 }, (_, i) => ({
+  dao: ["Marinade", "Jito", "Jupiter", "Meteora"][i % 4],
+  protocol: ["Marinade", "Jito", "Jupiter", "Meteora"][i % 4],
+  proposalId: `PROP-${1000 + i}`,
+  voteDate: daysAgo(20 + i * 10),
+  timestamp: daysAgo(20 + i * 10).getTime(),
+  voteChoice: ["For", "Against", "Abstain"][i % 3],
+  votingPower: 100 + Math.random() * 500,
+}));
+
 export const DEMO_WALLET_HISTORY: WalletHistory = {
+  walletAddress: DEMO_WALLET_ADDRESS,
   address: DEMO_WALLET_ADDRESS,
   displayName: "Sarah Chen (DeFi Developer)",
   walletAge: 547,
@@ -27,6 +56,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       amount: 5000,
       currency: "USDC",
       repaid: true,
+      status: 'repaid',
+      borrowed: 5000,
       daysToRepay: 28,
       liquidated: false,
       loanDate: daysAgo(120),
@@ -38,6 +69,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       amount: 12000,
       currency: "USDC",
       repaid: true,
+      status: 'repaid',
+      borrowed: 12000,
       daysToRepay: 45,
       liquidated: false,
       loanDate: daysAgo(280),
@@ -49,6 +82,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       amount: 3000,
       currency: "USDC",
       repaid: true,
+      status: 'repaid',
+      borrowed: 3000,
       daysToRepay: 15,
       liquidated: false,
       loanDate: daysAgo(450),
@@ -60,6 +95,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       amount: 8000,
       currency: "USDC",
       repaid: true,
+      status: 'repaid',
+      borrowed: 8000,
       daysToRepay: 60,
       liquidated: false,
       loanDate: daysAgo(365),
@@ -74,6 +111,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       pair: "SOL/USDC",
       durationDays: 87,
       feesEarned: 245,
+      currentValue: 15245,
+      impermanentLoss: -120,
       startDate: daysAgo(180),
       endDate: daysAgo(93),
       tvl: 15_000,
@@ -84,6 +123,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       pair: "SOL/mSOL",
       durationDays: 134,
       feesEarned: 312,
+      currentValue: 8812,
+      impermanentLoss: -85,
       startDate: daysAgo(400),
       endDate: daysAgo(266),
       tvl: 8_500,
@@ -94,6 +135,8 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
       pair: "BONK/SOL",
       durationDays: 23,
       feesEarned: 89,
+      currentValue: 5289,
+      impermanentLoss: -45,
       startDate: daysAgo(50),
       endDate: daysAgo(27),
       tvl: 5_200,
@@ -101,24 +144,11 @@ export const DEMO_WALLET_HISTORY: WalletHistory = {
     },
   ],
   
-  tradingStats: {
-    totalTrades: 234,
-    washTradingDetected: false,
-    rugPullParticipation: false,
-    tokensCreated: 0,
-    averagePnl: "+12.4% monthly",
-    riskScore: "MEDIUM",
-    profitableTrades: 167,
-    losingTrades: 67,
-  },
+  tradingStats: demoTradingStats,
+  trading: demoTradingStats,
   
-  governanceVotes: Array.from({ length: 23 }, (_, i) => ({
-    protocol: ["Marinade", "Jito", "Jupiter", "Meteora"][i % 4],
-    proposalId: `PROP-${1000 + i}`,
-    voteDate: daysAgo(20 + i * 10),
-    voteChoice: ["For", "Against", "Abstain"][i % 3],
-    votingPower: 100 + Math.random() * 500,
-  })),
+  governanceVotes: demoGovernanceVotes,
+  governance: demoGovernanceVotes,
   
   nftHoldings: [
     {
@@ -234,36 +264,42 @@ export const DEMO_CRED_SCORE: CredScore = {
   
   positiveFactors: [
     {
+      factor: "perfect_loan_repayment",
       type: "perfect_loan_repayment",
       description: "100% loan repayment rate across 4 loans with zero liquidations",
       impact: 50,
       category: "loans",
     },
     {
+      factor: "long_term_activity",
       type: "long_term_activity",
       description: "Consistent activity for 547 days including bear market periods",
       impact: 30,
       category: "maturity",
     },
     {
+      factor: "protocol_diversity",
       type: "protocol_diversity",
       description: "Active usage across 9 reputable DeFi protocols",
       impact: 25,
       category: "maturity",
     },
     {
+      factor: "governance_participation",
       type: "governance_participation",
       description: "74% governance participation rate (above average)",
       impact: 20,
       category: "community",
     },
     {
+      factor: "disciplined_trading",
       type: "disciplined_trading",
       description: "71% win rate with no wash trading or rug participation",
       impact: 35,
       category: "trading",
     },
     {
+      factor: "committed_lp",
       type: "committed_lp",
       description: "Average LP position duration of 81 days",
       impact: 25,
@@ -276,6 +312,8 @@ export const DEMO_CRED_SCORE: CredScore = {
   improvementTips: [
     {
       category: "lpCommitment",
+      suggestion: "Maintain all LP positions for at least 60 days",
+      potentialGain: 15,
       currentState: "Average LP duration: 81 days, with one short 23-day position",
       targetState: "Maintain all LP positions for at least 60 days",
       estimatedImpact: 15,
@@ -289,6 +327,8 @@ export const DEMO_CRED_SCORE: CredScore = {
     },
     {
       category: "community",
+      suggestion: "Increase governance participation to 90%+",
+      potentialGain: 8,
       currentState: "Good governance participation (74%), but room for improvement",
       targetState: "Increase governance participation to 90%+",
       estimatedImpact: 8,
@@ -302,6 +342,8 @@ export const DEMO_CRED_SCORE: CredScore = {
     },
     {
       category: "loans",
+      suggestion: "Maintain repayment streak with more frequent borrowing",
+      potentialGain: 5,
       currentState: "Perfect repayment history, but limited recent activity",
       targetState: "Maintain repayment streak with more frequent borrowing",
       estimatedImpact: 5,
