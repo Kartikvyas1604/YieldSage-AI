@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, JetBrains_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { Navbar } from "@/components/layout/Navbar";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -49,6 +50,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased`}
       >
         <Providers>
+          <Navbar />
           {children}
         </Providers>
       </body>
