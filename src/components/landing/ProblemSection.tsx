@@ -2,141 +2,118 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Unlock, ArrowRight } from 'lucide-react';
+import { Lock, Unlock, ArrowRight, Zap } from 'lucide-react';
 import { GlowCard } from '@/components/ui/GlowCard';
 
 export function ProblemSection() {
   return (
-    <section className="py-20 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-32 px-4 relative overflow-hidden bg-bg-secondary">
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border-bright to-transparent" />
+      
+      <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-24"
         >
-          <h2 className="font-display text-5xl md:text-6xl font-bold text-text-primary mb-6">
-            The <span className="text-accent-red">$50 Trillion</span> Problem
+          <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full border border-accent-red/30 bg-accent-red/5">
+             <Zap className="w-4 h-4 text-accent-red" />
+             <span className="text-xs font-mono text-accent-red uppercase tracking-wider">The Inefficiency</span>
+          </div>
+          <h2 className="font-display text-4xl md:text-6xl font-semibold text-text-primary mb-6">
+            The <span className="text-accent-red">Overcollateralization</span> Trap
           </h2>
-          <p className="font-body text-xl text-text-secondary max-w-3xl mx-auto">
-            Every DeFi lending protocol today requires massive overcollateralization
-            because there is zero credit history on-chain
+          <p className="font-body text-xl text-text-secondary max-w-3xl mx-auto font-light leading-relaxed">
+            DeFi protocols demand absurdly high collateral because they cannot gauge user trust. 
+            Smart capital is left idle, draining market liquidity.
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Traditional DeFi */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.1 }}
           >
-            <GlowCard glowColor="red" className="h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-lg bg-accent-red/20 border border-accent-red flex items-center justify-center">
-                  <Lock size={24} className="text-accent-red" />
+            <div className="h-full rounded-2xl glass border border-border bg-bg-card/50 p-8 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Lock size={120} />
+              </div>
+              
+              <div className="flex items-center gap-4 mb-8 relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center">
+                  <Lock className="text-accent-red w-6 h-6" />
                 </div>
-                <h3 className="font-display text-2xl font-semibold text-text-primary">
-                  Traditional DeFi
-                </h3>
+                <h3 className="font-display text-2xl font-medium text-text-primary">Traditional DeFi</h3>
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg">
-                  <span className="font-mono text-text-secondary">Collateral</span>
-                  <span className="font-mono text-xl font-bold text-accent-red">$1,500</span>
+              <div className="space-y-4 relative z-10">
+                <div className="flex items-center justify-between p-5 bg-bg-primary rounded-xl border border-border/50">
+                  <span className="text-text-secondary">Collateral Required</span>
+                  <span className="font-mono text-xl text-accent-red font-medium">$1,500</span>
                 </div>
-
-                <ArrowRight size={24} className="text-text-muted mx-auto" />
-
-                <div className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg">
-                  <span className="font-mono text-text-secondary">Can Borrow</span>
-                  <span className="font-mono text-xl font-bold text-text-primary">$1,000</span>
+                <div className="flex justify-center py-2">
+                  <ArrowRight className="text-text-muted rotate-90 md:rotate-0" />
                 </div>
-
-                <div className="p-4 bg-accent-red/10 border border-accent-red rounded-lg">
-                  <p className="font-body text-sm text-accent-red">
-                    <strong>$500 wasted</strong> — locked up for no reason
-                  </p>
+                <div className="flex items-center justify-between p-5 bg-bg-primary rounded-xl border border-border/50">
+                  <span className="text-text-secondary">Borrowing Power</span>
+                  <span className="font-mono text-xl text-text-primary font-medium">$1,000</span>
                 </div>
               </div>
 
-              <div className="mt-6 font-mono text-sm text-text-muted">
-                150% collateralization = 50% of capital wasted
+              <div className="mt-8 p-4 rounded-xl bg-accent-red/5 border border-accent-red/10 text-center relative z-10">
+                <p className="text-sm text-accent-red/80 font-light">
+                  <strong className="font-medium text-accent-red">50% Capital Wasted</strong> — Locked doing nothing.
+                </p>
               </div>
-            </GlowCard>
+            </div>
           </motion.div>
 
           {/* With CredChain */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <GlowCard glowColor="green" className="h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-lg bg-accent-green/20 border border-accent-green flex items-center justify-center">
-                  <Unlock size={24} className="text-accent-green" />
+            <div className="h-full rounded-2xl glass-strong border border-accent-blue/30 bg-bg-card p-8 shadow-[0_0_50px_rgba(59,130,246,0.1)] relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Unlock size={120} className="text-accent-blue" />
+              </div>
+              
+              <div className="flex items-center gap-4 mb-8 relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/30 flex items-center justify-center">
+                  <Unlock className="text-accent-blue w-6 h-6" />
                 </div>
-                <h3 className="font-display text-2xl font-semibold text-text-primary">
-                  With CredChain
-                </h3>
+                <h3 className="font-display text-2xl font-medium text-text-primary">CredChain Powered</h3>
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg">
-                  <span className="font-mono text-text-secondary">Collateral</span>
-                  <span className="font-mono text-xl font-bold text-accent-green">$800</span>
+              <div className="space-y-4 relative z-10">
+                <div className="flex items-center justify-between p-5 bg-bg-primary rounded-xl border border-border/50 shadow-inner">
+                  <span className="text-text-secondary">Collateral Required</span>
+                  <span className="font-mono text-xl text-accent-blue font-medium">$800</span>
                 </div>
-
-                <ArrowRight size={24} className="text-text-muted mx-auto" />
-
-                <div className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg">
-                  <span className="font-mono text-text-secondary">Can Borrow</span>
-                  <span className="font-mono text-xl font-bold text-text-primary">$1,000</span>
+                <div className="flex justify-center py-2">
+                  <ArrowRight className="text-accent-blue/50 rotate-90 md:rotate-0" />
                 </div>
-
-                <div className="p-4 bg-accent-green/10 border border-accent-green rounded-lg">
-                  <p className="font-body text-sm text-accent-green">
-                    <strong>$200 saved</strong> — unlocked by trust
-                  </p>
+                <div className="flex items-center justify-between p-5 bg-bg-primary rounded-xl border border-border/50 shadow-inner">
+                  <span className="text-text-secondary">Borrowing Power</span>
+                  <span className="font-mono text-xl text-text-primary font-medium">$1,000</span>
                 </div>
               </div>
 
-              <div className="mt-6 font-mono text-sm text-text-secondary">
-                80% collateralization = more efficient capital usage
-              </div>
-            </GlowCard>
-          </motion.div>
-        </div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
-        >
-          {[
-            { label: "Locked in Collateral", value: "$50T+" },
-            { label: "DeFi Users", value: "400M+" },
-            { label: "Solana TVL", value: "$50B+" },
-            { label: "Capital Wasted", value: "50%" },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="font-display text-3xl md:text-4xl font-bold text-accent-gold mb-2">
-                {stat.value}
-              </div>
-              <div className="font-body text-sm text-text-secondary">
-                {stat.label}
+              <div className="mt-8 p-4 rounded-xl bg-accent-blue/10 border border-accent-blue/20 text-center relative z-10">
+                <p className="text-sm text-accent-blue/90 font-light">
+                  <strong className="font-medium text-accent-blue text-glow">Undercollateralized Lending</strong> — Trust unlocked.
+                </p>
               </div>
             </div>
-          ))}
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ import { CTASection } from '@/components/landing/CTASection';
 
 export default function Home() {
   return (
-    <main className="relative">
+    <main className="relative min-h-screen bg-bg-primary text-text-primary selection:bg-accent-blue/30 selection:text-white">
       <HeroSection />
       <ProblemSection />
       <HowItWorksSection />
