@@ -10,37 +10,41 @@ export function Navbar() {
   const { connected } = useWallet();
 
   return (
-    <nav className="sticky top-0 z-50 glass-strong border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-gold to-accent-gold-bright flex items-center justify-center">
-              <Brain size={24} className="text-bg-primary" />
+    <nav className="fixed top-6 inset-x-0 mx-auto max-w-5xl z-50 px-6 py-3 rounded-full glass-strong border border-white/10 shadow-2xl backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative">
+            <div className="absolute inset-0 bg-accent-gold blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-accent-gold to-accent-gold-bright flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-300">
+              <Brain size={20} className="text-bg-primary" />
             </div>
-            <div>
-              <div className="font-display text-xl font-bold text-text-primary group-hover:text-accent-gold transition-colors">
-                CredChain
-              </div>
-              <div className="font-mono text-xs text-text-muted uppercase tracking-wider">
-                AI Credit Score
-              </div>
-            </div>
-          </Link>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-display text-lg font-bold text-text-primary tracking-tight group-hover:text-accent-gold transition-colors">
+              CredChain
+            </span>
+            <span className="font-mono text-[10px] text-accent-gold/80 uppercase tracking-[0.2em]">
+              AI Intelligence
+            </span>
+          </div>
+        </Link>
 
-          {/* Navigation */}
-          <div className="flex items-center gap-6">
-            {connected && (
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg font-body text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-card transition-colors"
-              >
-                <Home size={18} />
-                Dashboard
-              </Link>
-            )}
-            
-            {/* Wallet Connect Button */}
+        {/* Navigation */}
+        <div className="flex items-center gap-6">
+          {connected && (
+            <Link
+              href="/dashboard"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/10"
+            >
+              <Home size={16} />
+              Dashboard
+            </Link>
+          )}
+          
+          {/* Wallet Connect Button */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue to-accent-purple-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <ClientWalletButton />
           </div>
         </div>

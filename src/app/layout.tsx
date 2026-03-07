@@ -47,8 +47,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${playfair.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased`}
+        className={`${playfair.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased font-sans bg-bg-primary`}
       >
+        <div className="bg-noise" />
         <Providers>
           <Navbar />
           {children}
