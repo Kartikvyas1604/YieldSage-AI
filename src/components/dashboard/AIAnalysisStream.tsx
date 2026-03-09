@@ -67,9 +67,9 @@ export function AIAnalysisStream({ reasoning, isStreaming = false }: AIAnalysisS
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <h3 className="font-display text-lg font-semibold text-text-primary">
+      <div className="flex items-center justify-center mb-4 pb-3 border-b border-border">
+        <div className="flex items-center gap-2 text-center">
+          <h3 className="font-display text-lg font-semibold text-text-primary ">
             AI Analysis
           </h3>
           {isStreaming && (
