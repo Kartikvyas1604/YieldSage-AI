@@ -54,7 +54,7 @@ export function HowItWorksSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           {/* Connecting line for desktop */}
-          <div className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-[1px] bg-gradient-to-r from-transparent via-border-bright to-transparent z-0" />
+          <div className="hidden lg:block absolute top-[44px] left-[12%] right-[12%] h-[1px] bg-accent-blue z-0" />
           
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -69,7 +69,7 @@ export function HowItWorksSection() {
               >
                 <div className="flex flex-col items-center text-center p-6 rounded-2xl glass hover:bg-white/[0.02] transition-colors h-full border border-border/30 hover:border-border-bright/50">
                   <div className={`w-20 h-20 mb-8 rounded-2xl flex items-center justify-center bg-bg-primary border border-border shadow-xl relative overflow-hidden group`}>
-                    <div className="absolute inset-0 bg-gradient-to-br opacity-20 group-hover:opacity-40 transition-opacity from-accent-blue/40 to-transparent" />
+                    <div className="absolute inset-0  opacity-20 group-hover:opacity-40 transition-opacity bg-accent-blue/10" />
                     <Icon className={`w-8 h-8 text-text-primary relative z-10`} />
                   </div>
                   

@@ -45,7 +45,7 @@ const SCORE_CATEGORIES = [
 export function ScoreFactorsSection() {
   return (
     <section className="py-32 px-4 bg-bg-secondary relative">
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border-bright to-transparent" />
+      <div className="absolute top-0 inset-x-0 h-px bg-accent-blue" />
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

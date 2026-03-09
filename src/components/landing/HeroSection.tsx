@@ -9,10 +9,10 @@ export function HeroSection() {
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden pt-32 pb-16 px-4">
       {/* Background */}
       <div className="absolute inset-0 bg-bg-primary overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-accent-blue/10 rounded-full blur-[120px] opacity-70" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-accent-gold/10 rounded-full blur-[100px] opacity-60" />
+        
+        
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
-        <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-bg-primary to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-64 bg-accent-gold" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto w-full flex flex-col items-center">
@@ -42,8 +42,8 @@ export function HeroSection() {
         
         {/* Mock Graphic */}
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.4 }} className="w-full mt-24 relative max-w-4xl">
-          <div className="absolute -inset-1 bg-gradient-to-b from-accent-blue/20 to-transparent rounded-2xl blur-xl opacity-50" />
-          <div className="relative w-full aspect-[21/9] rounded-xl glass-strong border border-border-bright/50 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col">
+          
+          <div className="relative w-full aspect-[21/9] rounded-xl glass-strong border border-border-bright/50 overflow-hidden shadow-hard flex flex-col">
             <div className="h-10 border-b border-border/50 flex items-center px-4 gap-2 bg-black/40">
               <div className="w-3 h-3 rounded-full bg-border-bright" />
               <div className="w-3 h-3 rounded-full bg-border-bright" />

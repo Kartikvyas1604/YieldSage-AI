@@ -122,7 +122,7 @@ export function ProtocolIntegrationsSection() {
                 className="p-6 rounded-xl border border-border bg-bg-card hover:bg-bg-card-hover transition-colors group"
               >
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-blue/20 to-accent-gold/20 mb-3 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-accent-gold mb-3 flex items-center justify-center">
                     <span className="text-xl font-bold text-accent-gold">
                       {protocol.name[0]}
                     </span>

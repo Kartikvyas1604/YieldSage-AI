@@ -8,7 +8,7 @@ import { GlowCard } from '@/components/ui/GlowCard';
 export function ProblemSection() {
   return (
     <section className="py-32 px-4 relative overflow-hidden bg-bg-secondary">
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border-bright to-transparent" />
+      <div className="absolute top-0 inset-x-0 h-px bg-accent-blue" />
       
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
@@ -80,7 +80,7 @@ export function ProblemSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="h-full rounded-2xl glass-strong border border-accent-blue/30 bg-bg-card p-8 shadow-[0_0_50px_rgba(59,130,246,0.1)] relative overflow-hidden group">
+            <div className="h-full rounded-2xl glass-strong border border-accent-blue/30 bg-bg-card p-8 shadow-hard relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Unlock size={120} className="text-accent-blue" />
               </div>

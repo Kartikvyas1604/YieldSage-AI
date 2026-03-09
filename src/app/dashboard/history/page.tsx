@@ -163,7 +163,7 @@ export default function HistoryPage() {
                       </span>
                       <div className="flex-1 h-2 rounded-full bg-bg-secondary overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-accent-blue to-accent-gold rounded-full"
+                          className="h-full bg-accent-gold rounded-full"
                           style={{ width: `${(entry.score / 850) * 100}%` }}
                         />
                       </div>

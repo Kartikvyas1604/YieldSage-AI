@@ -28,7 +28,7 @@ export function CTASection() {
             Unlock undercollateralized lending.
           </p>
 
-          <button className="group px-10 py-5 bg-gradient-to-r from-accent-gold to-accent-gold-bright rounded-lg font-body font-semibold text-bg-primary text-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-3 mx-auto">
+          <button className="group px-10 py-5 bg-accent-gold rounded-lg font-body font-semibold text-bg-primary text-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-3 mx-auto">
             Check My Credit Score
             <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
           </button>

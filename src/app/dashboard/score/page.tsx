@@ -145,7 +145,7 @@ export default function ScoreDetailPage() {
                     </div>
                     <div className="w-full h-2 rounded-full bg-bg-secondary overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-accent-blue to-accent-gold rounded-full transition-all duration-500"
+                        className="h-full bg-accent-gold rounded-full transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>

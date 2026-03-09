@@ -110,7 +110,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="h-1.5 w-full bg-bg-primary rounded-full overflow-hidden border border-border/30">
                           <div 
-                            className="h-full bg-gradient-to-r from-accent-blue/50 to-accent-blue rounded-full"
+                            className="h-full bg-accent-gold rounded-full"
                             style={{ width: `${(item.score / item.maxScore) * 100}%` }}
                           />
                         </div>

@@ -163,7 +163,7 @@ export function TokenUtilitySection() {
                 className={`relative ${tier.color} ${tier.popular ? "scale-105" : ""}`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-accent-gold-bright to-accent-gold text-xs font-bold text-bg-primary">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-accent-gold text-xs font-bold text-bg-primary">
                     MOST POPULAR
                   </div>
                 )}

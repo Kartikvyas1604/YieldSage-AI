@@ -10,13 +10,13 @@ export function Navbar() {
   const { connected } = useWallet();
 
   return (
-    <nav className="fixed top-6 inset-x-0 mx-auto max-w-5xl z-50 px-6 py-3 rounded-full glass-strong border border-white/10 shadow-2xl backdrop-blur-xl">
+    <nav className="fixed top-6 inset-x-0 mx-auto max-w-5xl z-50 px-6 py-3 rounded-full glass-strong border border-white/10 shadow-2xl backdrop--xl">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative">
-            <div className="absolute inset-0 bg-accent-gold blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-accent-gold to-accent-gold-bright flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-300">
+            <div className="absolute inset-0 bg-accent-gold  opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="relative w-10 h-10 rounded-xl bg-accent-gold flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform duration-300">
               <Brain size={20} className="text-bg-primary" />
             </div>
           </div>
@@ -44,7 +44,7 @@ export function Navbar() {
           
           {/* Wallet Connect Button */}
           <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-accent-blue to-accent-purple-500 rounded-lg blur opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+            <div className="absolute -inset-1 bg-accent-gold rounded-lg  opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <ClientWalletButton />
           </div>
         </div>
