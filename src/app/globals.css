@@ -1,10 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-border: var(--border);
+  --color-border-bright: var(--border-bright);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-green: var(--accent-green);
+  --color-accent-red: var(--accent-red);
+}
+
 :root {
   --bg-primary: #FDFBF7;
   --bg-secondary: #F0EAD6;
   --bg-card: #FFFFFF;
+  --bg-card-hover: #FAFAFA;
   --border: #1E1E1E;
   --border-bright: #000000;
   --text-primary: #111111;
@@ -14,6 +31,22 @@
   --accent-gold: #EA580C;
   --accent-green: #059669;
   --accent-red: #DC2626;
+}
+
+.dark {
+  --bg-primary: #09090B;
+  --bg-secondary: #18181B;
+  --bg-card: #121214;
+  --bg-card-hover: #1E1E22;
+  --border: #3F3F46;
+  --border-bright: #71717A;
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --accent-blue: #3B82F6;
+  --accent-gold: #F59E0B;
+  --accent-green: #10B981;
+  --accent-red: #EF4444;
 }
 
 body {
@@ -78,6 +111,11 @@ body {
   background: rgba(255, 255, 255, 0.4);
   animation: shimmer 2s infinite;
 }
+
+.dark .animate-shimmer::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .shadow-hard {
   box-shadow: 4px 4px 0 0 var(--border-bright);
 }

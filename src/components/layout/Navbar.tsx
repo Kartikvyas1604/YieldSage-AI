@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { ClientWalletButton } from '@/components/wallet/ClientWalletButton';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { Brain, Home } from 'lucide-react';
 
 export function Navbar() {
@@ -43,9 +44,12 @@ export function Navbar() {
           )}
           
           {/* Wallet Connect Button */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-accent-gold rounded-lg  opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-            <ClientWalletButton />
+          <div className="relative flex items-center gap-4">
+            <ThemeToggle />
+            <div className="relative">
+              <div className="absolute -inset-1 bg-accent-gold rounded-lg  opacity-20 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+              <ClientWalletButton />
+            </div>
           </div>
         </div>
       </div>
