@@ -3,16 +3,14 @@
  * Implements OBSERVE → THINK → SCORE → RETURN flow using Claude
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 import { CredScore } from "@/types/score";
 import { CREDCHAIN_SYSTEM_PROMPT } from "./prompts";
-import { TOOL_DEFINITIONS, executeTool } from "./tools";
+import { executeTool } from "./tools";
 import { calculateCredScore } from "./scoring";
 import { DEMO_CRED_SCORE } from "@/lib/data/mock";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "" });
 
 export interface AgentAnalysisOptions {
   walletAddress: string;
@@ -71,105 +69,34 @@ export async function runCredChainAgent(
       demoMode
     );
 
-    // PHASE 2: THINK — Let Claude analyze with tools
+    // PHASE 2: THINK — Let Gemini analyze without tool loops
     onProgress?.("THINK: AI analyzing patterns...");
 
-    const messages: Anthropic.MessageParam[] = [
-      {
-        role: "user",
-        content: `Analyze this Solana wallet and generate a comprehensive credit score: ${walletAddress}
+    const prompt = `${CREDCHAIN_SYSTEM_PROMPT}\n\nAnalyze this Solana wallet and generate a comprehensive credit score: ${walletAddress}\n\nWallet History: ${JSON.stringify(walletHistory)}\n\nWallet Maturity: ${JSON.stringify(walletMaturity)}\n\nPlease analyze this data, then calculate a score from 0-850 based on the CredChain scoring methodology. Provide detailed reasoning for each category score.`;
 
-Please use your tools to gather all necessary data, then calculate a score from 0-850 based on the CredChain scoring methodology.
-
-Provide detailed reasoning for each category score.`,
-      },
-    ];
-
-    let response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      system: CREDCHAIN_SYSTEM_PROMPT,
-      tools: TOOL_DEFINITIONS as Anthropic.Tool[],
-      messages,
+    let response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
     });
-
-    // Handle tool use loop
-    let iterationCount = 0;
-    const maxIterations = 10;
-
-    while (
-      response.stop_reason === "tool_use" &&
-      iterationCount < maxIterations
-    ) {
-      iterationCount++;
-
-      const toolUseBlock = response.content.find(
-        (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
-      );
-
-      if (!toolUseBlock) break;
-
-      onProgress?.(`Using tool: ${toolUseBlock.name}...`);
-
-      // Execute the tool
-      const toolResult = await executeTool(
-        toolUseBlock.name,
-        toolUseBlock.input as Record<string, unknown>,
-        demoMode
-      );
-
-      // Add assistant message and tool result
-      messages.push({
-        role: "assistant",
-        content: response.content,
-      });
-
-      messages.push({
-        role: "user",
-        content: [
-          {
-            type: "tool_result",
-            tool_use_id: toolUseBlock.id,
-            content: JSON.stringify(toolResult),
-          },
-        ],
-      });
-
-      // Get next response
-      response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
-        system: CREDCHAIN_SYSTEM_PROMPT,
-        tools: TOOL_DEFINITIONS as Anthropic.Tool[],
-        messages,
-      });
-    }
+    
+    const reasoning = response.text || "No reasoning provided by Gemini.";
 
     // PHASE 3: SCORE — Calculate final score
     onProgress?.("SCORE: Calculating final credit score...");
 
     const credScore = calculateCredScore(walletHistory, {
-      accountAgeDays: walletMaturity.accountAgeDays,
-      transactionConsistency: walletMaturity.transactionConsistency,
-      balanceVolatility: walletMaturity.balanceVolatility,
+      accountAgeDays: walletMaturity.accountAgeDays || 0,
+      transactionConsistency: walletMaturity.transactionConsistency || 0,
+      balanceVolatility: walletMaturity.balanceVolatility || 0,
     });
 
-    // Extract AI reasoning from Claude's response
-    const textContent = response.content.find(
-      (block): block is Anthropic.TextBlock => block.type === "text"
-    );
+    onReasoningUpdate?.(reasoning, "final_analysis");
 
-    if (textContent) {
-      // Parse Claude's reasoning and add to score
-      const reasoning = textContent.text;
-      onReasoningUpdate?.(reasoning, "final_analysis");
-
-      reasoningSteps.push({
-        category: "final_analysis",
-        reasoning,
-        timestamp: Date.now(),
-      });
-    }
+    reasoningSteps.push({
+      category: "final_analysis",
+      reasoning,
+      timestamp: Date.now(),
+    });
 
     // PHASE 4: RETURN — Build final CredScore object
     const finalScore: CredScore = {
