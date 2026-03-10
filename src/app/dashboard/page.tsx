@@ -43,111 +43,107 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-secondary pt-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
 
         {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-border">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="px-2 py-0.5 text-xs font-mono font-semibold border border-border rounded bg-bg-card text-text-secondary uppercase tracking-wider">
                 {connected ? 'Live' : 'Demo'}
               </span>
-              <span className="text-xs text-text-muted font-mono">
-                {tier} Tier
-              </span>
+              <span className="text-xs text-text-muted font-mono">{tier} Tier</span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-text-primary mb-1">
-              Credit Dashboard
-            </h1>
-            <div className="flex items-center gap-2">
-              <Wallet size={13} className="text-text-muted" />
-              <span className="font-mono text-sm text-text-secondary">
-                {formatAddress(address, 8)}
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-xl font-bold text-text-primary">Credit Dashboard</h1>
+              <span className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-text-secondary">
+                <Wallet size={12} className="text-text-muted" />
+                {formatAddress(address, 6)}
+                <button onClick={handleCopy} className="text-text-muted hover:text-text-primary transition-colors">
+                  {copied ? <Check size={11} /> : <Copy size={11} />}
+                </button>
+                <button onClick={handleExplorer} className="text-text-muted hover:text-text-primary transition-colors">
+                  <ExternalLink size={11} />
+                </button>
               </span>
-              <button onClick={handleCopy} className="text-text-muted hover:text-text-primary transition-colors ml-1">
-                {copied ? <Check size={13} /> : <Copy size={13} />}
-              </button>
-              <button onClick={handleExplorer} className="text-text-muted hover:text-text-primary transition-colors">
-                <ExternalLink size={13} />
-              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard/history" className="btn-outline text-sm py-2 px-4 gap-1.5">
-              <Clock size={14} /> History
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/history" className="btn-outline text-xs py-1.5 px-3 gap-1">
+              <Clock size={13} /> History
             </Link>
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="btn-primary text-sm py-2 px-4 gap-1.5"
+              className="btn-primary text-xs py-1.5 px-3 gap-1"
             >
-              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
-              {refreshing ? 'Updating...' : 'Refresh'}
+              <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+              {refreshing ? 'Updating…' : 'Refresh'}
             </button>
           </div>
         </div>
 
         {/* ── KPI Row ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { icon: BarChart2, label: 'Credit Score', value: String(score.score), sub: 'out of 850' },
+            { icon: BarChart2, label: 'Credit Score', value: String(score.score), sub: '/ 850' },
             { icon: TrendingUp, label: '30-Day Change', value: '+24 pts', sub: 'improving' },
             { icon: Shield, label: 'Risk Level', value: 'Low', sub: 'verified' },
             { icon: Zap, label: 'Borrow Tier', value: tier, sub: 'unlocked' },
           ].map(({ icon: Icon, label, value, sub }) => (
-            <div key={label} className="p-5 border border-border rounded-lg bg-bg-card">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-mono text-text-muted uppercase tracking-wider">{label}</p>
-                <Icon size={14} className="text-text-muted" />
+            <div key={label} className="p-4 border border-border rounded-lg bg-bg-card">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">{label}</p>
+                <Icon size={13} className="text-text-muted" />
               </div>
-              <p className="font-display text-2xl font-bold text-text-primary">{value}</p>
-              <p className="text-xs text-text-muted mt-0.5 font-mono">{sub}</p>
+              <p className="font-display text-xl font-bold text-text-primary">{value}</p>
+              <p className="text-[10px] text-text-muted mt-0.5 font-mono">{sub}</p>
             </div>
           ))}
         </div>
 
         {/* ── Main Grid ── */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-5">
 
           {/* Score Breakdown */}
           <div className="lg:col-span-2 border border-border rounded-lg bg-bg-card overflow-hidden">
-            <div className="px-6 py-5 border-b border-border flex items-center justify-between">
-              <h2 className="font-semibold text-text-primary">Score Breakdown</h2>
+            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+              <h2 className="font-semibold text-sm text-text-primary">Score Breakdown</h2>
               <Link href="/dashboard/score" className="text-xs font-mono text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors">
-                Full Report <ChevronRight size={12} />
+                Full Report <ChevronRight size={11} />
               </Link>
             </div>
 
-            <div className="p-6 flex flex-col md:flex-row items-center gap-10">
+            <div className="p-5 flex items-center gap-8">
               {/* Ring */}
-              <div className="shrink-0 relative w-44 h-44">
+              <div className="shrink-0 relative w-32 h-32">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" strokeWidth="8" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" strokeWidth="9" />
                   <circle
                     cx="50" cy="50" r="40" fill="none"
-                    stroke="var(--text-primary)" strokeWidth="8"
+                    stroke="var(--text-primary)" strokeWidth="9"
                     strokeDasharray={`${(score.score / 850) * 251.2} 251.2`}
                     strokeLinecap="round"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-4xl font-bold text-text-primary">{score.score}</span>
-                  <span className="text-[10px] font-mono text-text-muted mt-0.5">/ 850</span>
+                  <span className="font-display text-3xl font-bold text-text-primary">{score.score}</span>
+                  <span className="text-[9px] font-mono text-text-muted">/ 850</span>
                 </div>
               </div>
 
               {/* Bars */}
-              <div className="flex-1 w-full space-y-4">
+              <div className="flex-1 w-full space-y-3">
                 {score.breakdown && Object.entries(score.breakdown).map(([category, item]) => (
                   <div key={category}>
-                    <div className="flex justify-between text-xs mb-1.5">
+                    <div className="flex justify-between text-xs mb-1">
                       <span className="capitalize text-text-primary font-medium">
                         {category.replace(/([A-Z])/g, ' $1').trim()}
                       </span>
                       <span className="font-mono text-text-muted">{item.score}/{item.maxScore}</span>
                     </div>
-                    <div className="h-1.5 w-full bg-bg-secondary rounded-full overflow-hidden">
+                    <div className="h-1 w-full bg-bg-secondary rounded-full overflow-hidden">
                       <div
                         className="h-full bg-text-primary rounded-full transition-all duration-700"
                         style={{ width: `${(item.score / item.maxScore) * 100}%` }}
@@ -160,43 +156,45 @@ export default function DashboardPage() {
           </div>
 
           {/* AI Intelligence */}
-          <div className="border border-border rounded-lg bg-bg-card flex flex-col overflow-hidden min-h-[400px]">
-            <div className="px-6 py-5 border-b border-border">
-              <h2 className="font-semibold text-text-primary">AI Intelligence</h2>
-              <p className="text-xs text-text-muted mt-0.5 font-mono">Gemini 2.5 Flash analysis</p>
+          <div className="border border-border rounded-lg bg-bg-card flex flex-col overflow-hidden" style={{ maxHeight: 320 }}>
+            <div className="px-5 py-3.5 border-b border-border shrink-0">
+              <h2 className="font-semibold text-sm text-text-primary">AI Intelligence</h2>
+              <p className="text-[10px] text-text-muted mt-0.5 font-mono">Gemini 2.5 Flash</p>
             </div>
-            <div className="flex-1 p-4 overflow-hidden">
+            <div className="flex-1 p-3 overflow-y-auto">
               <AIAnalysisStream reasoning={score.aiReasoning} />
             </div>
           </div>
         </div>
 
         {/* ── Action Cards ── */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-3">
           {[
             {
               title: 'View Full Report',
-              desc: 'Detailed score breakdown across all 5 vectors.',
+              desc: 'Detailed breakdown across all 5 vectors.',
               href: '/dashboard/score',
               cta: 'Open Report',
             },
             {
               title: 'Score History',
-              desc: 'Track your credit score progress over time.',
+              desc: 'Track credit score progress over time.',
               href: '/dashboard/history',
               cta: 'View History',
             },
             {
               title: 'View on Solscan',
-              desc: 'Inspect your wallet on the Solana block explorer.',
+              desc: 'Inspect wallet on the block explorer.',
               href: `https://solscan.io/account/${address}`,
               cta: 'Open Explorer',
               external: true,
             },
           ].map((card) => (
-            <div key={card.title} className="p-6 border border-border rounded-lg bg-bg-card hover:border-text-primary transition-colors group">
-              <h3 className="font-semibold text-text-primary mb-1.5">{card.title}</h3>
-              <p className="text-sm text-text-secondary mb-5">{card.desc}</p>
+            <div key={card.title} className="p-4 border border-border rounded-lg bg-bg-card hover:border-text-primary transition-colors flex items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold text-sm text-text-primary">{card.title}</h3>
+                <p className="text-xs text-text-secondary mt-0.5">{card.desc}</p>
+              </div>
               {card.external ? (
                 <a
                   href={card.href}
