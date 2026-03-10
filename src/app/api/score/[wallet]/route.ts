@@ -1,58 +1,44 @@
 /**
  * GET /api/score/[wallet]
- * Public endpoint for protocols to query credit scores
+ * On-demand real credit score for any valid Solana wallet.
+ * Used by external protocols to query scores.
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { validateSolanaAddress } from "@/lib/agent";
-import { DEMO_CRED_SCORE, DEMO_WALLET_ADDRESS } from "@/lib/data/mock";
+import { runCredChainAgent, validateSolanaAddress } from "@/lib/agent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
     const { wallet: walletAddress } = await params;
 
-    // Validate wallet address
     if (!validateSolanaAddress(walletAddress)) {
-      return NextResponse.json(
-        { error: "Invalid Solana wallet address" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid Solana wallet address" }, { status: 400 });
     }
 
-    // Check if demo wallet
-    if (walletAddress === DEMO_WALLET_ADDRESS) {
+    const result = await runCredChainAgent({ walletAddress });
+
+    if (result.success && result.score) {
       return NextResponse.json({
-        score: DEMO_CRED_SCORE.score,
-        tier: DEMO_CRED_SCORE.tier,
-        timestamp: Date.now(),
-        verified: true,
-        demo: true,
+        walletAddress,
+        score:     result.score.score,
+        tier:      result.score.tier,
+        breakdown: result.score.breakdown,
+        riskFlags: result.score.riskFlags,
+        timestamp: result.score.timestamp,
       });
     }
-
-    // TODO: Query from database/cache
-    // const cachedScore = await redis.get(`score:${walletAddress}`);
-    // if (cachedScore) return NextResponse.json(cachedScore);
-
-    // Score not found
     return NextResponse.json(
-      {
-        error: "Score not found for this wallet. Please analyze first.",
-        walletAddress,
-      },
-      { status: 404 }
+      { error: result.error ?? "Analysis failed", walletAddress },
+      { status: 422 }
     );
-  } catch (error) {
-    console.error("Score Query Error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("Score Query Error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
