@@ -79,6 +79,7 @@ export default function DashboardPage() {
   const [reasoning, setReasoning] = useState<AIReasoning[]>([]);
   const [error,     setError]     = useState<string | null>(null);
   const [copied,    setCopied]    = useState(false);
+  const [cacheLoaded, setCacheLoaded] = useState(false);
 
   const address = publicKey?.toBase58() ?? '';
 
@@ -146,11 +147,24 @@ export default function DashboardPage() {
     }
   }, [analyzing]);
 
-  // Auto-analyze when wallet first connects
+  // Load cached score when wallet connects, only auto-analyze if no cache exists
   useEffect(() => {
-    if (connected && address && !score && !analyzing && !error) {
-      analyze(address);
-    }
+    if (!connected || !address) return;
+    try {
+      const cached = localStorage.getItem('credchain_last_score');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // Use cache only if it belongs to this wallet
+        if (parsed?.walletAddress === address) {
+          setScore(parsed);
+          setCacheLoaded(true);
+          return;
+        }
+      }
+    } catch { /* ignore */ }
+    // No valid cache — run fresh analysis
+    setCacheLoaded(true);
+    analyze(address);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, address]);
 
@@ -162,7 +176,10 @@ export default function DashboardPage() {
   }, [address]);
 
   const handleRefresh = useCallback(() => {
-    if (address) analyze(address);
+    if (!address) return;
+    try { localStorage.removeItem('credchain_last_score'); } catch {}
+    setScore(null);
+    analyze(address);
   }, [address, analyze]);
 
   const handleExplorer = useCallback(() => {
@@ -170,7 +187,7 @@ export default function DashboardPage() {
   }, [address]);
 
   if (!connected)                   return <ConnectPrompt />;
-  if (analyzing || (!score && !error)) return <AnalyzingState progress={progress} reasoning={reasoning} />;
+  if (!cacheLoaded || analyzing || (!score && !error)) return <AnalyzingState progress={progress} reasoning={reasoning} />;
 
   if (error) {
     return (
