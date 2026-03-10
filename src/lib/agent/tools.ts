@@ -11,12 +11,37 @@ const RPC_URL =
   process.env.NEXT_PUBLIC_HELIUS_RPC_URL ||
   'https://api.mainnet-beta.solana.com';
 
-const connection = new Connection(RPC_URL, 'confirmed');
+const connection = new Connection(RPC_URL, {
+  commitment: 'confirmed',
+  // Conservative fetch size to stay within public RPC rate limits
+  httpHeaders: { 'Content-Type': 'application/json' },
+});
 
 function getHeliusApiKey(): string | null {
   if (process.env.HELIUS_API_KEY) return process.env.HELIUS_API_KEY;
   const match = RPC_URL.match(/api-key=([^&]+)/);
   return match?.[1] ?? null;
+}
+
+// Small delay helper to avoid burst-triggering 429s
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+// Retry an RPC call up to 3 times with exponential back-off on 429
+async function withRetry<T>(fn: () => Promise<T>, retries = 3, baseDelay = 500): Promise<T> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const is429 = msg.includes('429') || msg.includes('Too Many Requests');
+      if (is429 && attempt < retries) {
+        await sleep(baseDelay * Math.pow(2, attempt)); // 500 ms, 1 s, 2 s
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('Max retries exceeded');
 }
 
 // ── Known on-chain program IDs ────────────────────────────────
@@ -86,14 +111,21 @@ export async function fetchWalletOnChainData(walletAddress: string): Promise<Wal
   const pubkey = new PublicKey(walletAddress);
   const apiKey = getHeliusApiKey();
 
-  // Fetch in parallel: signatures + SOL balance + SPL token accounts
-  const [signatures, lamports, tokenAccountsResp] = await Promise.all([
-    connection.getSignaturesForAddress(pubkey, { limit: 1000 }),
-    connection.getBalance(pubkey),
+  // Fetch sequentially to avoid bursting the public RPC rate limiter.
+  // 150 signatures is enough to establish wallet age + activity patterns.
+  const signatures = await withRetry(() =>
+    connection.getSignaturesForAddress(pubkey, { limit: 150 })
+  );
+  await sleep(200);
+
+  const lamports = await withRetry(() => connection.getBalance(pubkey));
+  await sleep(200);
+
+  const tokenAccountsResp = await withRetry(() =>
     connection.getParsedTokenAccountsByOwner(pubkey, {
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-    }),
-  ]);
+    })
+  );
 
   const solBalance = lamports / 1e9;
   const successfulTxs = signatures.filter(s => !s.err);
@@ -186,24 +218,30 @@ async function detectDefiActivity(
       }
     }
   } else {
-    // Fallback: scan account keys from a sample of full transactions
-    const sampleSigs = signatures.slice(0, 40).map(s => s.signature);
-    try {
-      const txs = await connection.getParsedTransactions(sampleSigs, {
-        maxSupportedTransactionVersion: 0,
-      });
-      for (const tx of txs) {
-        if (!tx) continue;
-        for (const key of tx.transaction.message.accountKeys) {
-          const k = key.pubkey.toBase58();
-          if (k in LENDING_PROGRAMS)    { lendingSet.add(LENDING_PROGRAMS[k]);    lendingTxCount++; }
-          if (k in DEX_PROGRAMS)        { dexSet.add(DEX_PROGRAMS[k]);            tradingTxCount++; }
-          if (k in LP_PROGRAMS)         { lpSet.add(LP_PROGRAMS[k]);              lpTxCount++; }
-          if (k in GOVERNANCE_PROGRAMS) { govSet.add(GOVERNANCE_PROGRAMS[k]);     govTxCount++; }
-          if (k in STAKING_PROGRAMS)    { stakeSet.add(STAKING_PROGRAMS[k]);      stakingTxCount++; }
+    // Fallback: scan account keys from a small sample of full transactions.
+    // Fetch in chunks of 10 with a pause to respect public RPC rate limits.
+    const CHUNK = 10;
+    const sampleSigs = signatures.slice(0, 30).map(s => s.signature);
+    for (let i = 0; i < sampleSigs.length; i += CHUNK) {
+      const chunk = sampleSigs.slice(i, i + CHUNK);
+      try {
+        const txs = await withRetry(() =>
+          connection.getParsedTransactions(chunk, { maxSupportedTransactionVersion: 0 })
+        );
+        for (const tx of txs) {
+          if (!tx) continue;
+          for (const key of tx.transaction.message.accountKeys) {
+            const k = key.pubkey.toBase58();
+            if (k in LENDING_PROGRAMS)    { lendingSet.add(LENDING_PROGRAMS[k]);    lendingTxCount++; }
+            if (k in DEX_PROGRAMS)        { dexSet.add(DEX_PROGRAMS[k]);            tradingTxCount++; }
+            if (k in LP_PROGRAMS)         { lpSet.add(LP_PROGRAMS[k]);              lpTxCount++; }
+            if (k in GOVERNANCE_PROGRAMS) { govSet.add(GOVERNANCE_PROGRAMS[k]);     govTxCount++; }
+            if (k in STAKING_PROGRAMS)    { stakeSet.add(STAKING_PROGRAMS[k]);      stakingTxCount++; }
+          }
         }
-      }
-    } catch { /* ignore RPC errors */ }
+      } catch { /* ignore chunk errors — best effort */ }
+      if (i + CHUNK < sampleSigs.length) await sleep(300);
+    }
   }
 
   return {
