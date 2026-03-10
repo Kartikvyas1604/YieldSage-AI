@@ -1,80 +1,176 @@
+import {
+  CredScore, getScoreTier,
+  RiskFlag, ImprovementTip,
+} from "@/types/score";
+import { LoanPosition, LPPosition, TradingStats, GovernanceVote } from "@/types/wallet";
+import { fetchWalletOnChainData, WalletOnChainData } from "./tools";
+import {
+  calculateLoanRepaymentScore,
+  calculateWalletMaturityScore,
+  calculateTradingBehaviorScore,
+  calculateLPCommitmentScore,
+  calculateCommunityScore,
+} from "./scoring";
+
 /**
- * CredChain AI Agent — Real on-chain analysis pipeline
- * OBSERVE (Helius/RPC) → THINK (OpenRouter AI) → SCORE (structured JSON) → RETURN
+ * Build a deterministic CredScore directly from raw on-chain data.
+ * No AI model — same data always produces the same score.
  */
+function scoreFromOnChain(data: WalletOnChainData): CredScore {
+  const { walletAddress, walletAgeDays, totalTransactions, defiActivity, solBalance } = data;
 
-import OpenAI from "openai";
-import { CredScore, ScoreBreakdown, RiskFlag, ImprovementTip, ScoreTier, getScoreTier } from "@/types/score";
-import { CREDCHAIN_SYSTEM_PROMPT } from "./prompts";
-import { fetchWalletOnChainData } from "./tools";
+  // ── Wallet Maturity ───────────────────────────────────────
+  const txPerDay = totalTransactions / Math.max(walletAgeDays, 1);
+  const consistency =
+    txPerDay >= 0.7 ? 'daily' :
+    txPerDay >= 0.15 ? 'weekly' :
+    txPerDay >= 0.03 ? 'monthly' : 'sporadic';
 
-// Lazy client — avoids build-time crash when env var is absent.
-function getAI() {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) throw new Error("OPENROUTER_API_KEY is not configured.");
-  return new OpenAI({
-    apiKey,
-    baseURL: "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-      "X-Title": "CredChain AI",
-    },
-  });
-}
+  // Rough balance volatility estimate: low balance → more volatile spending
+  const balanceVolatility = solBalance > 10 ? 0.15 : solBalance > 1 ? 0.35 : 0.65;
 
-// Retry OpenRouter calls on transient 503/429 errors with exponential back-off.
-// Cycles through multiple free models before giving up.
-async function generateWithRetry(
-  prompt: string,
-  onProgress?: (step: string) => void
-): Promise<string> {
-  // Models are tried in order; on rate-limit (429) we immediately move to the next one.
-  const models = [
-    'meta-llama/llama-3.3-70b-instruct:free',
-    'google/gemma-3-27b-it:free',
-    'mistralai/mistral-small-3.1-24b-instruct:free',
-    'nousresearch/hermes-3-llama-3.1-405b:free',
-    'google/gemma-3-12b-it:free',
-    'qwen/qwen3-coder:free',
+  const maturityResult = calculateWalletMaturityScore(
+    walletAgeDays, totalTransactions, consistency, balanceVolatility
+  );
+
+  // ── Loan Repayment ─────────────────────────────────────────
+  // We only know which lending protocols were used, not individual loan details.
+  // Assume each seen protocol represents a successfully repaid loan
+  // (a liquidated wallet typically stops using lending — still active means repaid).
+  const syntheticLoans: LoanPosition[] = defiActivity.lendingProtocols.map(protocol => ({
+    protocol,
+    amount: 1000,
+    currency: 'USDC',
+    repaid: true,
+    status: 'repaid' as const,
+    borrowed: 1000,
+    liquidated: false,
+    loanDate: new Date(Date.now() - Math.floor(walletAgeDays / 2) * 86400000),
+    repaymentDate: new Date(),
+  }));
+
+  const loanResult = calculateLoanRepaymentScore(syntheticLoans);
+
+  // ── Trading Behavior ──────────────────────────────────────
+  const tradingStats: TradingStats = {
+    totalTrades: defiActivity.tradingTxCount,
+    // Neutral 50% win-rate assumption since we don't have P&L data
+    winRate: defiActivity.tradingTxCount > 0 ? 0.5 : 0,
+    totalProfit: 0,
+    totalVolume: defiActivity.tradingTxCount * 500,
+    averageTradeSize: defiActivity.tradingTxCount > 0 ? 500 : 0,
+    avgHoldTime: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+    washTradingDetected: false,
+    rugPullParticipation: false,
+    tokensCreated: 0,
+    averagePnl: '0%',
+    riskScore: 'MEDIUM' as const,
+    profitableTrades: Math.floor(defiActivity.tradingTxCount * 0.5),
+    losingTrades: Math.ceil(defiActivity.tradingTxCount * 0.5),
+  };
+
+  const tradingResult = calculateTradingBehaviorScore(tradingStats);
+
+  // ── LP Commitment ─────────────────────────────────────────
+  const syntheticLP: LPPosition[] = defiActivity.lpProtocols.map(protocol => ({
+    protocol,
+    pair: 'SOL-USDC',
+    durationDays: Math.min(walletAgeDays, 90),
+    feesEarned: 50,
+    currentValue: 1000,
+    impermanentLoss: -10,
+    startDate: new Date(Date.now() - Math.min(walletAgeDays, 90) * 86400000),
+  }));
+
+  const lpResult = calculateLPCommitmentScore(syntheticLP);
+
+  // ── Community / Governance ────────────────────────────────
+  const syntheticVotes: GovernanceVote[] = Array.from(
+    { length: defiActivity.governanceTxCount },
+    (_, i) => {
+      const proto =
+        defiActivity.governanceProtocols[i % Math.max(defiActivity.governanceProtocols.length, 1)] ||
+        'Unknown';
+      const ts = Date.now() - i * 7 * 86400000;
+      return {
+        dao: proto,
+        protocol: proto,
+        proposalId: `PROP-${i}`,
+        voteDate: new Date(ts),
+        timestamp: ts,
+        voteChoice: 'For',
+        votingPower: 100,
+      };
+    }
+  );
+
+  const communityResult = calculateCommunityScore(syntheticVotes);
+
+  // ── Final score (max 850) ─────────────────────────────────
+  const finalScore = Math.min(
+    850,
+    Math.round(
+      loanResult.score +
+      maturityResult.score +
+      tradingResult.score +
+      lpResult.score +
+      communityResult.score
+    )
+  );
+
+  const tier = getScoreTier(finalScore);
+
+  // ── Risk flags ────────────────────────────────────────────
+  const riskFlags: RiskFlag[] = [];
+  if (walletAgeDays < 90) {
+    riskFlags.push({ type: 'new_wallet', severity: 'medium', description: 'Wallet is less than 90 days old' });
+  }
+  if (solBalance < 0.05) {
+    riskFlags.push({ type: 'low_balance', severity: 'low', description: 'Very low SOL balance' });
+  }
+
+  // ── Improvement tips ──────────────────────────────────────
+  const improvementTips: ImprovementTip[] = [];
+  if (defiActivity.lendingProtocols.length === 0) {
+    improvementTips.push({ category: 'Loan Repayment', suggestion: 'Use a lending protocol (Marginfi, Kamino) and repay on time to build credit history', potentialGain: 80 });
+  }
+  if (defiActivity.governanceTxCount === 0) {
+    improvementTips.push({ category: 'Community', suggestion: 'Participate in DAO governance via Realms to boost your community score', potentialGain: 40 });
+  }
+  if (defiActivity.lpProtocols.length === 0) {
+    improvementTips.push({ category: 'LP Commitment', suggestion: 'Provide liquidity on Orca or Raydium to demonstrate on-chain commitment', potentialGain: 60 });
+  }
+
+  // ── Build reasoning log ───────────────────────────────────
+  const now = Date.now();
+  const aiReasoning = [
+    { category: 'data_gathering',  reasoning: `Wallet age: ${walletAgeDays} days | Txns: ${totalTransactions} | SOL: ${solBalance.toFixed(3)} | Tokens: ${data.tokenCount} | Lending: ${defiActivity.lendingProtocols.join(', ') || 'none'} | DEXs: ${defiActivity.dexProtocols.join(', ') || 'none'} | LP: ${defiActivity.lpProtocols.join(', ') || 'none'} | Gov: ${defiActivity.governanceProtocols.join(', ') || 'none'}`, impact: 'positive' as const, timestamp: now },
+    { category: 'walletMaturity',  reasoning: maturityResult.reasoning.join(' | '), impact: 'positive' as const, timestamp: now + 1 },
+    { category: 'loanRepayment',   reasoning: loanResult.reasoning.join(' | '), impact: 'positive' as const, timestamp: now + 2 },
+    { category: 'tradingBehavior', reasoning: tradingResult.reasoning.join(' | '), impact: 'positive' as const, timestamp: now + 3 },
+    { category: 'lpCommitment',    reasoning: lpResult.reasoning.join(' | '), impact: 'positive' as const, timestamp: now + 4 },
+    { category: 'community',       reasoning: communityResult.reasoning.join(' | '), impact: 'positive' as const, timestamp: now + 5 },
   ];
 
-  let lastError = '';
-
-  for (const model of models) {
-    try {
-      onProgress?.(`THINK: AI analyzing (${model})…`);
-      const response = await getAI().chat.completions.create({
-        model,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0,  // deterministic scoring
-      });
-      const content = response.choices[0]?.message?.content ?? '';
-      if (content) return content;
-      lastError = 'Empty response from model';
-    } catch (err: unknown) {
-      const status = (err as { status?: number }).status;
-      const msg = err instanceof Error ? err.message : String(err);
-      lastError = msg;
-      const isRateLimit  = status === 429 || msg.includes('429') || msg.includes('rate') || msg.includes('Too Many');
-      const isUnavailable = status === 503 || msg.includes('503') || msg.includes('UNAVAILABLE');
-      const isNotFound   = status === 404 || msg.includes('404') || msg.includes('No endpoints');
-
-      if (isRateLimit || isUnavailable) {
-        // Rate-limited on this model — try next immediately
-        onProgress?.(`THINK: ${model} rate-limited, trying next model…`);
-        continue;
-      }
-      if (isNotFound) {
-        // Model doesn't exist — skip silently
-        continue;
-      }
-      // Unknown error — log and try next model
-      onProgress?.(`THINK: ${model} error, trying next model…`);
-    }
-  }
-  throw new Error(
-    `All AI models are currently rate-limited. This is a temporary limit on free-tier OpenRouter models. Please wait a minute and try again. (${lastError.slice(0, 120)})`
-  );
+  return {
+    walletAddress,
+    score: finalScore,
+    tier,
+    breakdown: {
+      loanRepayment:   { score: loanResult.score,     maxScore: 255, weight: 30, signals: loanResult.reasoning },
+      walletMaturity:  { score: maturityResult.score,  maxScore: 170, weight: 20, signals: maturityResult.reasoning },
+      tradingBehavior: { score: tradingResult.score,   maxScore: 170, weight: 20, signals: tradingResult.reasoning },
+      lpCommitment:    { score: lpResult.score,        maxScore: 128, weight: 15, signals: lpResult.reasoning },
+      community:       { score: communityResult.score, maxScore: 127, weight: 15, signals: communityResult.reasoning },
+    },
+    riskFlags,
+    positiveFactors: [],
+    improvementTips,
+    aiReasoning,
+    timestamp: now,
+    history: [{ date: now, score: finalScore, change: 0 }],
+    benefits: [],
+  };
 }
 
 export interface AgentAnalysisOptions {
@@ -103,91 +199,32 @@ export async function runCredChainAgent(
 
     const observeSummary =
       `Wallet age: ${walletData.walletAgeDays} days | ` +
-      `Transactions: ${walletData.totalTransactions} (${walletData.successfulTransactions} successful) | ` +
-      `SOL balance: ${walletData.solBalance.toFixed(3)} SOL | ` +
-      `Tokens held: ${walletData.tokenCount} | ` +
-      `Lending protocols: ${walletData.defiActivity.lendingProtocols.join(', ') || 'none'} | ` +
-      `DEXs used: ${walletData.defiActivity.dexProtocols.join(', ') || 'none'} | ` +
-      `LP protocols: ${walletData.defiActivity.lpProtocols.join(', ') || 'none'} | ` +
-      `Governance: ${walletData.defiActivity.governanceProtocols.join(', ') || 'none'}`;
+      `Txns: ${walletData.totalTransactions} (${walletData.successfulTransactions} ok) | ` +
+      `SOL: ${walletData.solBalance.toFixed(3)} | ` +
+      `Tokens: ${walletData.tokenCount} | ` +
+      `Lending: ${walletData.defiActivity.lendingProtocols.join(', ') || 'none'} | ` +
+      `DEXs: ${walletData.defiActivity.dexProtocols.join(', ') || 'none'} | ` +
+      `LP: ${walletData.defiActivity.lpProtocols.join(', ') || 'none'} | ` +
+      `Gov: ${walletData.defiActivity.governanceProtocols.join(', ') || 'none'}`;
 
     onProgress?.("OBSERVE: On-chain data collected.");
     onReasoningUpdate?.(observeSummary, "data_gathering");
     reasoningSteps.push({ category: "data_gathering", reasoning: observeSummary, timestamp: Date.now() });
 
-    // ── PHASE 2: THINK ───────────────────────────────────────
-    onProgress?.("THINK: AI analyzing patterns…");
+    // ── PHASE 2: SCORE (deterministic, no AI) ────────────────
+    onProgress?.("SCORE: Calculating credit score from on-chain data…");
+    const credScore = scoreFromOnChain(walletData);
 
-    const dataPayload = {
-      walletAddress,
-      solBalance: walletData.solBalance,
-      totalTransactions: walletData.totalTransactions,
-      successfulTransactions: walletData.successfulTransactions,
-      walletAgeDays: walletData.walletAgeDays,
-      firstTxDate: walletData.firstTxDate,
-      lastTxDate: walletData.lastTxDate,
-      tokenCount: walletData.tokenCount,
-      topTokenHoldings: walletData.tokenHoldings.slice(0, 10),
-      defiActivity: walletData.defiActivity,
-    };
-
-    const prompt =
-      `${CREDCHAIN_SYSTEM_PROMPT}\n\n` +
-      `## Real On-Chain Data\n\n` +
-      `\`\`\`json\n${JSON.stringify(dataPayload, null, 2)}\n\`\`\`\n\n` +
-      `Generate the credit score JSON now. Return ONLY the JSON object.`;
-
-    const rawText = await generateWithRetry(prompt, onProgress);
-
-    // ── PHASE 3: PARSE ───────────────────────────────────────
-    onProgress?.("SCORE: Parsing AI score…");
-
-    let parsed: Record<string, unknown>;
-    try {
-      const jsonMatch =
-        rawText.match(/```(?:json)?\s*([\s\S]*?)```/) ||
-        rawText.match(/(\{[\s\S]*\})/);
-      const jsonStr = jsonMatch ? jsonMatch[1].trim() : rawText.trim();
-      parsed = JSON.parse(jsonStr);
-    } catch {
-      throw new Error(`AI returned non-JSON: ${rawText.slice(0, 300)}`);
+    for (const r of credScore.aiReasoning ?? []) {
+      const text = r.reasoning ?? '';
+      if (text) {
+        onReasoningUpdate?.(text, r.category);
+        reasoningSteps.push({ category: r.category, reasoning: text, timestamp: Date.now() });
+      }
     }
-
-    // Emit per-category reasoning
-    for (const [cat, item] of Object.entries(parsed.breakdown ?? {})) {
-      const r = (item as Record<string, unknown>).reasoning as string ?? "";
-      onReasoningUpdate?.(r, cat);
-      reasoningSteps.push({ category: cat, reasoning: r, timestamp: Date.now() });
-    }
-
-    const summary = parsed.summary as string | undefined;
-    if (summary) {
-      onReasoningUpdate?.(summary, "summary");
-      reasoningSteps.push({ category: "summary", reasoning: summary, timestamp: Date.now() });
-    }
-
-    // ── PHASE 4: BUILD RESULT ────────────────────────────────
-    const finalScore: CredScore = {
-      walletAddress,
-      score: Number(parsed.score),
-      tier: (parsed.tier as ScoreTier) ?? getScoreTier(Number(parsed.score)),
-      breakdown: parsed.breakdown as ScoreBreakdown | undefined,
-      riskFlags: (parsed.riskFlags as RiskFlag[]) ?? [],
-      positiveFactors: [],
-      improvementTips: (parsed.improvementTips as ImprovementTip[]) ?? [],
-      aiReasoning: reasoningSteps.map(s => ({
-        category: s.category,
-        reasoning: s.reasoning,
-        impact: "positive",
-        timestamp: s.timestamp,
-      })),
-      timestamp: Date.now(),
-      history: [{ date: Date.now(), score: Number(parsed.score), change: 0 }],
-      benefits: [],
-    };
 
     onProgress?.("COMPLETE: Analysis finished!");
-    return { success: true, score: finalScore, reasoningSteps };
+    return { success: true, score: credScore, reasoningSteps };
 
   } catch (error) {
     return {
@@ -204,5 +241,7 @@ export function validateSolanaAddress(address: string): boolean {
 }
 
 export function getEstimatedAnalysisTime(): number {
-  return 20_000; // ~20 s for real analysis
+  return 8_000; // ~8 s (no AI call, just RPC fetches)
 }
+
+
