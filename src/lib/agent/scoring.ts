@@ -181,7 +181,7 @@ export function calculateWalletMaturityScore(
   breakdown.balanceStability = stabilityScore;
 
   // 4. Tenure Score (0-20 points) - continuity bonus
-  const tenureScore = transactionConsistency === "daily" || transactionConsistency === "weekly" ? 20 : 10;
+  const tenureScore = (transactionConsistency === "daily" || transactionConsistency === "weekly") && transactionCount > 10 ? 20 : transactionCount > 0 ? 10 : 0;
   breakdown.tenureScore = tenureScore;
 
   const totalScore = ageScore + consistencyScore + stabilityScore + tenureScore;
@@ -380,9 +380,9 @@ export function calculateCommunityScore(governance: GovernanceVote[]): {
 
   if (governance.length === 0) {
     return {
-      score: 15,
-      breakdown: { baseScore: 15 },
-      reasoning: ["No governance participation yet"],
+      score: 0,
+      breakdown: {},
+      reasoning: ["No governance participation found"],
     };
   }
 

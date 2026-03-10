@@ -4,55 +4,94 @@
 
 "use client";
 
-import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Wallet } from "lucide-react";
 import Link from "next/link";
 import { GlowCard } from "@/components/ui/GlowCard";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
-import { DEMO_CRED_SCORE } from "@/lib/data/mock";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useEffect, useState } from "react";
+import type { CredScore } from "@/types/score";
 
-// Generate mock history data
-const generateHistoryData = (): Array<{
+interface HistoryEntry {
   date: string;
   score: number;
   change: number;
   event: string | null;
-}> => {
-  const history: Array<{
-    date: string;
-    score: number;
-    change: number;
-    event: string | null;
-  }> = [];
-  const monthsBack = 12;
-  let currentScore = 742;
+}
 
-  for (let i = monthsBack; i >= 0; i--) {
-    const date = new Date();
-    date.setMonth(date.getMonth() - i);
-
-    // Gradually improve score over time (with some variance)
-    const baseScore = 650 + (monthsBack - i) * 7;
-    const variance = Math.floor(Math.random() * 20) - 10;
-    currentScore = Math.min(850, Math.max(550, baseScore + variance));
-
-    history.push({
-      date: date.toISOString(),
-      score: currentScore,
-      change: i === monthsBack ? 0 : history[history.length - 1] ? currentScore - history[history.length - 1].score : 0,
-      event: i === 3 ? "Repaid loan on Marginfi" : i === 7 ? "30-day LP streak" : null,
-    });
+function buildHistory(score: CredScore): HistoryEntry[] {
+  // Use the score's own history array if it has multiple entries
+  if (score.history && score.history.length > 1) {
+    return score.history.map((h, i, arr) => ({
+      date: new Date(typeof h.date === 'number' ? h.date : Number(h.date)).toISOString(),
+      score: h.score,
+      change: i === 0 ? 0 : h.score - arr[i - 1].score,
+      event: null,
+    }));
   }
-
-  return history;
-};
-
-const SCORE_HISTORY = generateHistoryData();
+  // Only one data point — show just the current score with its real timestamp
+  return [{
+    date: new Date(score.timestamp ?? Date.now()).toISOString(),
+    score: score.score,
+    change: 0,
+    event: "First analysis",
+  }];
+}
 
 export default function HistoryPage() {
-  const latestScore = DEMO_CRED_SCORE.score;
+  const { publicKey, connected } = useWallet();
+  const [score, setScore] = useState<CredScore | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("credchain_last_score");
+      if (!raw) return;
+      const parsed: CredScore = JSON.parse(raw);
+      // Only show score for the currently connected wallet
+      if (publicKey && parsed.walletAddress !== publicKey.toBase58()) return;
+      setScore(parsed);
+    } catch { /* ignore */ }
+  }, [publicKey]);
+
+  if (!connected || !publicKey) {
+    return (
+      <div className="min-h-screen bg-bg-primary pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <Wallet size={40} className="mx-auto mb-4 text-text-muted" />
+          <p className="text-text-secondary">Connect your wallet to view score history.</p>
+          <Link href="/dashboard" className="mt-4 inline-block text-accent-blue hover:underline">Go to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!score) {
+    return (
+      <div className="min-h-screen bg-bg-primary pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-text-secondary mb-4">No score analysis found for this wallet.</p>
+          <Link href="/dashboard" className="btn-primary text-sm px-6 py-2">Analyze Now</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const SCORE_HISTORY = buildHistory(score);
+  const latestScore = score.score;
   const oldestScore = SCORE_HISTORY[0].score;
   const totalChange = latestScore - oldestScore;
-  const percentChange = ((totalChange / oldestScore) * 100).toFixed(1);
+  const percentChange = oldestScore > 0 ? ((totalChange / oldestScore) * 100).toFixed(1) : "0.0";
+  const positiveMonths = SCORE_HISTORY.filter(h => h.change >= 0).length;
+
+  // Derive real milestones from breakdown
+  const breakdown = score.breakdown;
+  const milestones: { text: string; sub: string }[] = [];
+  if (breakdown?.loanRepayment?.score === 255) milestones.push({ text: "Perfect loan repayment score", sub: "All loans repaid on time" });
+  if (breakdown?.walletMaturity && breakdown.walletMaturity.score >= 100) milestones.push({ text: "Established wallet", sub: `Score: ${breakdown.walletMaturity.score}/170` });
+  if (breakdown?.community && breakdown.community.score >= 60) milestones.push({ text: "Active governance participant", sub: `Community score: ${breakdown.community.score}/127` });
+  if (breakdown?.lpCommitment && breakdown.lpCommitment.score >= 50) milestones.push({ text: "Committed LP provider", sub: `LP score: ${breakdown.lpCommitment.score}/128` });
+  if (breakdown?.tradingBehavior && breakdown.tradingBehavior.score >= 80) milestones.push({ text: "Strong trading history", sub: `Trading score: ${breakdown.tradingBehavior.score}/170` });
+  if (milestones.length === 0) milestones.push({ text: "First score established", sub: "Keep using DeFi protocols to improve" });
 
   return (
     <div className="min-h-screen bg-bg-primary pt-20 px-6">
@@ -71,7 +110,8 @@ export default function HistoryPage() {
             Score History
           </h1>
           <p className="text-text-secondary">
-            Track your credit score evolution over the past 12 months
+            Your real on-chain credit score for{" "}
+            <span className="font-mono text-text-primary">{score.walletAddress.slice(0, 8)}…{score.walletAddress.slice(-6)}</span>
           </p>
         </div>
 
@@ -116,13 +156,13 @@ export default function HistoryPage() {
           </GlowCard>
 
           <GlowCard>
-            <h3 className="text-text-secondary mb-2">Starting Score</h3>
+            <h3 className="text-text-secondary mb-2">Tier</h3>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-mono font-bold text-text-primary">
-                {oldestScore}
+              <span className="text-3xl font-mono font-bold text-text-primary">
+                {score.tier}
               </span>
             </div>
-            <p className="text-sm text-text-muted mt-1">12 months ago</p>
+            <p className="text-sm text-text-muted mt-1">Current tier</p>
           </GlowCard>
         </div>
 
@@ -213,63 +253,41 @@ export default function HistoryPage() {
               🎉 Key Milestones
             </h3>
             <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent-green mt-2" />
-                <div>
-                  <p className="text-text-primary font-semibold">
-                    Crossed 700 threshold
-                  </p>
-                  <p className="text-sm text-text-muted">3 months ago</p>
+              {milestones.map((m, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-accent-green mt-2" />
+                  <div>
+                    <p className="text-text-primary font-semibold">{m.text}</p>
+                    <p className="text-sm text-text-muted">{m.sub}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent-green mt-2" />
-                <div>
-                  <p className="text-text-primary font-semibold">
-                    Perfect 90-day repayment streak
-                  </p>
-                  <p className="text-sm text-text-muted">2 months ago</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-accent-green mt-2" />
-                <div>
-                  <p className="text-text-primary font-semibold">
-                    Entered GOOD tier
-                  </p>
-                  <p className="text-sm text-text-muted">5 months ago</p>
-                </div>
-              </div>
+              ))}
             </div>
           </GlowCard>
 
           <GlowCard glowColor="blue">
             <h3 className="font-display font-bold text-text-primary mb-4">
-              📈 Growth Insights
+              📈 Breakdown Scores
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-text-secondary">Avg monthly gain</span>
-                <span className="font-mono font-bold text-accent-green">
-                  +{(totalChange / 12).toFixed(1)} pts
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-secondary">Best month</span>
-                <span className="font-mono font-bold text-text-primary">
-                  +{Math.max(...SCORE_HISTORY.map((h) => h.change))} pts
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-secondary">Consistency</span>
-                <span className="font-mono font-bold text-text-primary">
-                  {(
-                    (SCORE_HISTORY.filter((h) => h.change >= 0).length / SCORE_HISTORY.length) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </span>
-              </div>
+              {breakdown && Object.entries(breakdown).map(([cat, val]) => (
+                <div key={cat} className="flex justify-between items-center">
+                  <span className="text-text-secondary capitalize">{cat.replace(/([A-Z])/g, ' $1')}</span>
+                  <span className="font-mono font-bold text-text-primary">
+                    {val.score}/{val.maxScore}
+                  </span>
+                </div>
+              ))}
+              {!breakdown && (
+                <div className="flex justify-between items-center">
+                  <span className="text-text-secondary">Consistency</span>
+                  <span className="font-mono font-bold text-text-primary">
+                    {SCORE_HISTORY.length > 0
+                      ? ((positiveMonths / SCORE_HISTORY.length) * 100).toFixed(0)
+                      : "100"}%
+                  </span>
+                </div>
+              )}
             </div>
           </GlowCard>
         </div>
