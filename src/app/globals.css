@@ -1,61 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
+/* =============================================
+   CREDCHAIN — Pure Professional Black & White
+   Light mode : white bg / black text
+   Dark  mode : black bg / white text
+   ============================================= */
+
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --border: #e0e0e0;
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f5f5f5;
+  --bg-card:       #ffffff;
+  --bg-hover:      #f0f0f0;
+  --border:        #e4e4e4;
   --border-bright: #000000;
-  --text-primary: #000000;
-  --text-secondary: #444444;
-  --text-muted: #888888;
-  
-  --accent-blue: #000000;
-  --accent-gold: #000000;
-  --accent-green: #000000;
-  --accent-red: #000000;
+  --text-primary:   #000000;
+  --text-secondary: #525252;
+  --text-muted:     #a3a3a3;
+  --accent-blue:   #000000;
+  --accent-gold:   #000000;
+  --accent-green:  #000000;
+  --accent-red:    #000000;
+  --radius: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #000000;
-    --bg-secondary: #000000;
-    --bg-card: #000000;
-    --border: #333333;
-    --border-bright: #ffffff;
-    --text-primary: #ffffff;
-    --text-secondary: #bbbbbb;
-    --text-muted: #777777;
-    
-    --accent-blue: #ffffff;
-    --accent-gold: #ffffff;
-    --accent-green: #ffffff;
-    --accent-red: #ffffff;
-  }
+.dark {
+  --bg-primary:    #000000;
+  --bg-secondary:  #0a0a0a;
+  --bg-card:       #111111;
+  --bg-hover:      #1a1a1a;
+  --border:        #262626;
+  --border-bright: #ffffff;
+  --text-primary:   #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted:     #525252;
+  --accent-blue:   #ffffff;
+  --accent-gold:   #ffffff;
+  --accent-green:  #ffffff;
+  --accent-red:    #ffffff;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body, system-ui, sans-serif);
   -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
 
-.font-display {
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.font-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
+.font-display { font-family: var(--font-display, 'Playfair Display', serif); letter-spacing: -0.02em; }
+.font-mono    { font-family: var(--font-mono, 'JetBrains Mono', monospace); }
+.text-gradient, .text-gradient-gold, .text-gradient-blue { color: var(--text-primary); }
 
 .glass, .glass-strong {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
-.text-gradient, .text-gradient-gold, .text-gradient-blue {
-  color: var(--text-primary);
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .625rem 1.25rem;
+  background-color: var(--text-primary); color: var(--bg-primary);
+  border: 1px solid var(--text-primary); border-radius: var(--radius);
+  font-size: .875rem; font-weight: 600; cursor: pointer;
+  transition: opacity .15s; white-space: nowrap; text-decoration: none;
 }
+.btn-primary:hover    { opacity: .85; }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-outline {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .625rem 1.25rem;
+  background-color: transparent; color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: .875rem; font-weight: 500; cursor: pointer;
+  transition: all .15s; white-space: nowrap; text-decoration: none;
+}
+.btn-outline:hover    { border-color: var(--text-primary); background-color: var(--bg-hover); }
+.btn-outline:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Wallet adapter */
+.wallet-adapter-button {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+  border-radius: var(--radius) !important;
+  font-family: inherit !important;
+  font-size: .875rem !important;
+  font-weight: 600 !important;
+  height: 40px !important;
+  padding: 0 1rem !important;
+  transition: opacity .15s !important;
+  border: none !important;
+}
+.wallet-adapter-button:hover:not([disabled]) { opacity: .85 !important; }
+.wallet-adapter-modal-wrapper {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+.wallet-adapter-modal-title { color: var(--text-primary) !important; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+
+.bg-noise { display: none; }
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin-slow 8s linear infinite; }

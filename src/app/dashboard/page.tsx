@@ -1,152 +1,220 @@
 'use client';
 
-import React, { useState } from 'react';
-import { GlowCard } from '@/components/ui/GlowCard';
+import React, { useState, useCallback } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import Link from 'next/link';
+import {
+  RefreshCw, Copy, Check, ExternalLink,
+  TrendingUp, Shield, Zap, BarChart2,
+  Clock, Wallet, ChevronRight
+} from 'lucide-react';
 import { AIAnalysisStream } from '@/components/dashboard/AIAnalysisStream';
 import { DEMO_CRED_SCORE } from '@/lib/data/mock';
-import {
-  TrendingUp,
-  Calendar,
-  Wallet,
-  RefreshCw,
-  Activity,
-  ShieldCheck,
-  Zap
-} from 'lucide-react';
-import { formatDate, formatAddress } from '@/lib/utils/format';
+import { formatAddress } from '@/lib/utils/format';
 
 export default function DashboardPage() {
+  const { publicKey, connected } = useWallet();
   const [score] = useState(DEMO_CRED_SCORE);
+  const [copied, setCopied] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const address = publicKey?.toBase58() ?? score.walletAddress;
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [address]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await new Promise((r) => setTimeout(r, 1500));
+    setRefreshing(false);
+  }, []);
+
+  const handleExplorer = useCallback(() => {
+    window.open(`https://solscan.io/account/${address}`, '_blank', 'noopener noreferrer');
+  }, [address]);
+
+  const tier =
+    score.score >= 750 ? 'Platinum' :
+    score.score >= 650 ? 'Gold' :
+    score.score >= 500 ? 'Silver' : 'Bronze';
 
   return (
-    <div className="min-h-screen bg-bg-primary pt-32 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-border/50">
+    <div className="min-h-screen bg-bg-secondary pt-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+
+        {/* ── Header ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-border">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full border border-accent-blue/30 bg-accent-blue/5">
-              <ShieldCheck className="w-4 h-4 text-accent-blue" />
-              <span className="text-xs font-mono text-accent-blue uppercase tracking-wider">Verified Identity</span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 text-xs font-mono font-semibold border border-border rounded bg-bg-card text-text-secondary uppercase tracking-wider">
+                {connected ? 'Live' : 'Demo'}
+              </span>
+              <span className="text-xs text-text-muted font-mono">
+                {tier} Tier
+              </span>
             </div>
-            <h1 className="font-display text-4xl md:text-5xl font-semibold text-text-primary mb-3">
-              Credit Overview
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-text-primary mb-1">
+              Credit Dashboard
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-text-secondary text-sm font-mono">
-              <span className="flex items-center gap-2">
-                <Wallet className="w-4 h-4" /> {formatAddress(score.walletAddress, 6)}
+            <div className="flex items-center gap-2">
+              <Wallet size={13} className="text-text-muted" />
+              <span className="font-mono text-sm text-text-secondary">
+                {formatAddress(address, 8)}
               </span>
-              <span className="hidden md:inline text-border-bright">•</span>
-              <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" /> Updated {score.lastUpdated ? formatDate(score.lastUpdated, true) : 'Never'}
-              </span>
+              <button onClick={handleCopy} className="text-text-muted hover:text-text-primary transition-colors ml-1">
+                {copied ? <Check size={13} /> : <Copy size={13} />}
+              </button>
+              <button onClick={handleExplorer} className="text-text-muted hover:text-text-primary transition-colors">
+                <ExternalLink size={13} />
+              </button>
             </div>
           </div>
-          
-          <button className="group inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-border hover:border-accent-blue/50 text-text-primary rounded-full transition-all">
-            <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-700" />
-            <span className="text-sm font-medium">Refresh Data</span>
-          </button>
+
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/history" className="btn-outline text-sm py-2 px-4 gap-1.5">
+              <Clock size={14} /> History
+            </Link>
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="btn-primary text-sm py-2 px-4 gap-1.5"
+            >
+              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+              {refreshing ? 'Updating...' : 'Refresh'}
+            </button>
+          </div>
         </div>
 
-        {/* Top Metric Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlowCard className="bg-bg-secondary w-full" hover={false}>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-accent-gold/10 flex items-center justify-center border border-accent-gold/20 shrink-0">
-                <Activity className="w-6 h-6 text-accent-gold" />
+        {/* ── KPI Row ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { icon: BarChart2, label: 'Credit Score', value: String(score.score), sub: 'out of 850' },
+            { icon: TrendingUp, label: '30-Day Change', value: '+24 pts', sub: 'improving' },
+            { icon: Shield, label: 'Risk Level', value: 'Low', sub: 'verified' },
+            { icon: Zap, label: 'Borrow Tier', value: tier, sub: 'unlocked' },
+          ].map(({ icon: Icon, label, value, sub }) => (
+            <div key={label} className="p-5 border border-border rounded-lg bg-bg-card">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-mono text-text-muted uppercase tracking-wider">{label}</p>
+                <Icon size={14} className="text-text-muted" />
               </div>
-              <div>
-                <p className="text-sm text-text-secondary">Health Status</p>
-                <p className="text-lg font-medium text-text-primary">Excellent</p>
-              </div>
+              <p className="font-display text-2xl font-bold text-text-primary">{value}</p>
+              <p className="text-xs text-text-muted mt-0.5 font-mono">{sub}</p>
             </div>
-          </GlowCard>
-          
-          <GlowCard className="bg-bg-secondary w-full" hover={false}>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20 shrink-0">
-                <TrendingUp className="w-6 h-6 text-accent-blue" />
-              </div>
-              <div>
-                <p className="text-sm text-text-secondary">30-Day Trend</p>
-                <p className="text-lg font-medium text-accent-blue">+24 Points</p>
-              </div>
-            </div>
-          </GlowCard>
-
-          <GlowCard className="bg-bg-secondary w-full" hover={false}>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-accent-green/10 flex items-center justify-center border border-accent-green/20 shrink-0">
-                <Zap className="w-6 h-6 text-accent-green" />
-              </div>
-              <div>
-                <p className="text-sm text-text-secondary">Borrow Power</p>
-                <p className="text-lg font-medium text-text-primary">High Tier</p>
-              </div>
-            </div>
-          </GlowCard>
+          ))}
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8 pt-4">
-          
-          {/* Left Column - Score Gauge & Breakdown */}
-          <div className="lg:col-span-2 space-y-8">
-            <GlowCard className="bg-bg-card border-border/50 relative overflow-hidden" hover={false}>
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-blue/10 rounded-full blur-[120px] pointer-events-none" />
-              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12 p-2">
-                <div className="flex-1 w-full text-center md:text-left">
-                  <h2 className="text-2xl font-semibold mb-2">Global Trust Score</h2>
-                  <p className="text-text-secondary mb-8 font-light text-sm">
-                    Aggregated across 4 chains and 12 protocols. Your score unlocks premium tiers.
-                  </p>
-                  <div className="space-y-5">
-                    {score.breakdown && Object.entries(score.breakdown).map(([category, item], idx) => (
-                      <div key={idx} className="flex flex-col gap-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-text-primary capitalize">{category.replace(/([A-Z])/g, ' $1').trim()}</span>
-                          <span className="font-mono text-text-secondary">{item.score} <span className="text-border-bright">/</span> {item.maxScore}</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-bg-primary rounded-full overflow-hidden border border-border/30">
-                          <div 
-                            className="h-full bg-accent-gold rounded-full"
-                            style={{ width: `${(item.score / item.maxScore) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+        {/* ── Main Grid ── */}
+        <div className="grid lg:grid-cols-3 gap-6">
+
+          {/* Score Breakdown */}
+          <div className="lg:col-span-2 border border-border rounded-lg bg-bg-card overflow-hidden">
+            <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+              <h2 className="font-semibold text-text-primary">Score Breakdown</h2>
+              <Link href="/dashboard/score" className="text-xs font-mono text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors">
+                Full Report <ChevronRight size={12} />
+              </Link>
+            </div>
+
+            <div className="p-6 flex flex-col md:flex-row items-center gap-10">
+              {/* Ring */}
+              <div className="shrink-0 relative w-44 h-44">
+                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" strokeWidth="8" />
+                  <circle
+                    cx="50" cy="50" r="40" fill="none"
+                    stroke="var(--text-primary)" strokeWidth="8"
+                    strokeDasharray={`${(score.score / 850) * 251.2} 251.2`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-display text-4xl font-bold text-text-primary">{score.score}</span>
+                  <span className="text-[10px] font-mono text-text-muted mt-0.5">/ 850</span>
+                </div>
+              </div>
+
+              {/* Bars */}
+              <div className="flex-1 w-full space-y-4">
+                {score.breakdown && Object.entries(score.breakdown).map(([category, item]) => (
+                  <div key={category}>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="capitalize text-text-primary font-medium">
+                        {category.replace(/([A-Z])/g, ' $1').trim()}
+                      </span>
+                      <span className="font-mono text-text-muted">{item.score}/{item.maxScore}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-text-primary rounded-full transition-all duration-700"
+                        style={{ width: `${(item.score / item.maxScore) * 100}%` }}
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="w-64 h-64 shrink-0 flex items-center justify-center relative bg-bg-primary/50 backdrop-blur-sm rounded-full border border-border/50 shadow-2xl">
-                   <div className="absolute inset-2 rounded-full border-[1px] border-border-bright/50" />
-                   <div className="absolute inset-0 rounded-full border-[3px] border-accent-blue border-l-transparent border-t-transparent -rotate-45" />
-                   <div className="text-center relative z-10">
-                     <span className="text-7xl font-display font-bold text-gradient-blue tracking-tighter block">{score.score}</span>
-                     <span className="text-xs uppercase tracking-[0.3em] text-text-muted mt-3 block">Out of 850</span>
-                   </div>
-                </div>
+                ))}
               </div>
-            </GlowCard>
+            </div>
           </div>
 
-          {/* Right Column - AI Analysis */}
-          <div className="lg:col-span-1 h-[560px]">
-            <GlowCard className="h-full bg-bg-card border-border/50 flex flex-col p-6" hover={false}>
-               <h3 className="text-xl font-medium mb-6 flex items-center gap-3">
-                 <div className="w-8 h-8 rounded-lg bg-accent-gold/10 flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-accent-gold" />
-                 </div>
-                 Live Agent Intelligence
-               </h3>
-               <div className="flex-1 relative bg-bg-primary rounded-xl border border-border/50 overflow-hidden shadow-inner">
-                 <AIAnalysisStream reasoning={score.aiReasoning} />
-               </div>
-            </GlowCard>
+          {/* AI Intelligence */}
+          <div className="border border-border rounded-lg bg-bg-card flex flex-col overflow-hidden min-h-[400px]">
+            <div className="px-6 py-5 border-b border-border">
+              <h2 className="font-semibold text-text-primary">AI Intelligence</h2>
+              <p className="text-xs text-text-muted mt-0.5 font-mono">Gemini 2.5 Flash analysis</p>
+            </div>
+            <div className="flex-1 p-4 overflow-hidden">
+              <AIAnalysisStream reasoning={score.aiReasoning} />
+            </div>
           </div>
-
         </div>
+
+        {/* ── Action Cards ── */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            {
+              title: 'View Full Report',
+              desc: 'Detailed score breakdown across all 5 vectors.',
+              href: '/dashboard/score',
+              cta: 'Open Report',
+            },
+            {
+              title: 'Score History',
+              desc: 'Track your credit score progress over time.',
+              href: '/dashboard/history',
+              cta: 'View History',
+            },
+            {
+              title: 'View on Solscan',
+              desc: 'Inspect your wallet on the Solana block explorer.',
+              href: `https://solscan.io/account/${address}`,
+              cta: 'Open Explorer',
+              external: true,
+            },
+          ].map((card) => (
+            <div key={card.title} className="p-6 border border-border rounded-lg bg-bg-card hover:border-text-primary transition-colors group">
+              <h3 className="font-semibold text-text-primary mb-1.5">{card.title}</h3>
+              <p className="text-sm text-text-secondary mb-5">{card.desc}</p>
+              {card.external ? (
+                <a
+                  href={card.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-outline text-xs py-1.5 px-3 gap-1"
+                >
+                  {card.cta} <ExternalLink size={11} />
+                </a>
+              ) : (
+                <Link href={card.href} className="btn-outline text-xs py-1.5 px-3 gap-1">
+                  {card.cta} <ChevronRight size={11} />
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
