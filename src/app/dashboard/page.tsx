@@ -147,14 +147,19 @@ export default function DashboardPage() {
     }
   }, [analyzing]);
 
-  // Load cached score when wallet connects, only auto-analyze if no cache exists
+  // Load cached score when wallet connects; only auto-analyze if no valid cache exists.
+  // Guards against re-triggering: if score is already loaded for this address, do nothing.
   useEffect(() => {
     if (!connected || !address) return;
+    // Already have a score for this address in state — don't re-analyze
+    if (score && (score as typeof score).walletAddress === address) {
+      setCacheLoaded(true);
+      return;
+    }
     try {
       const cached = localStorage.getItem('credchain_last_score');
       if (cached) {
         const parsed = JSON.parse(cached);
-        // Use cache only if it belongs to this wallet
         if (parsed?.walletAddress === address) {
           setScore(parsed);
           setCacheLoaded(true);

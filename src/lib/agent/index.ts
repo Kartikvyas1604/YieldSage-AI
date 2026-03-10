@@ -28,7 +28,11 @@ async function generateWithRetry(
     for (let attempt = 0; attempt <= delays.length; attempt++) {
       try {
         onProgress?.(`THINK: Gemini AI analyzing (${model})…`);
-        const response = await getAI().models.generateContent({ model, contents: prompt });
+        const response = await getAI().models.generateContent({
+          model,
+          contents: prompt,
+          config: { temperature: 0 },  // deterministic scoring
+        });
         return response.text ?? '';
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
