@@ -126,7 +126,10 @@ export default function DashboardPage() {
                 timestamp: event.timestamp,
               }]);
             }
-            if (event.type === 'score')  setScore(event.score);
+            if (event.type === 'score') {
+              setScore(event.score);
+              try { localStorage.setItem('credchain_last_score', JSON.stringify(event.score)); } catch {}
+            }
             if (event.type === 'error')  throw new Error(event.error);
           } catch (parseErr) {
             // Skip malformed event lines; rethrow real errors
