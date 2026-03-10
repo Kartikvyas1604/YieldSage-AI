@@ -176,7 +176,7 @@ export default function ScoreDetailPage() {
             {Object.entries(categories).map(([key, category]) => {
               const percentage = Math.min(100, (category.score / category.maxScore) * 100);
               const weight     = CATEGORY_WEIGHTS[key as keyof typeof CATEGORY_WEIGHTS];
-              const reasoning  = (category as Record<string, unknown>).reasoning as string | undefined;
+              const reasoning  = (category as unknown as Record<string, unknown>).reasoning as string | undefined;
 
               return (
                 <GlowCard key={key}>
