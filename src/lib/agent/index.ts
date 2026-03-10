@@ -1,55 +1,80 @@
 /**
  * CredChain AI Agent — Real on-chain analysis pipeline
- * OBSERVE (Helius/RPC) → THINK (Gemini 2.5) → SCORE (structured JSON) → RETURN
+ * OBSERVE (Helius/RPC) → THINK (OpenRouter AI) → SCORE (structured JSON) → RETURN
  */
 
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import { CredScore, ScoreBreakdown, RiskFlag, ImprovementTip, ScoreTier, getScoreTier } from "@/types/score";
 import { CREDCHAIN_SYSTEM_PROMPT } from "./prompts";
 import { fetchWalletOnChainData } from "./tools";
 
 // Lazy client — avoids build-time crash when env var is absent.
 function getAI() {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
-  return new GoogleGenAI({ apiKey });
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) throw new Error("OPENROUTER_API_KEY is not configured.");
+  return new OpenAI({
+    apiKey,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+      "X-Title": "CredChain AI",
+    },
+  });
 }
 
-// Retry Gemini calls on transient 503/429 errors with exponential back-off.
-// Falls back to gemini-2.0-flash if 2.5-flash stays unavailable.
+// Retry OpenRouter calls on transient 503/429 errors with exponential back-off.
+// Cycles through multiple free models before giving up.
 async function generateWithRetry(
   prompt: string,
   onProgress?: (step: string) => void
 ): Promise<string> {
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
-  const delays = [3000, 6000, 12000]; // 3 s, 6 s, 12 s
+  // Models are tried in order; on rate-limit (429) we immediately move to the next one.
+  const models = [
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'google/gemma-3-27b-it:free',
+    'mistralai/mistral-small-3.1-24b-instruct:free',
+    'nousresearch/hermes-3-llama-3.1-405b:free',
+    'google/gemma-3-12b-it:free',
+    'qwen/qwen3-coder:free',
+  ];
+
+  let lastError = '';
 
   for (const model of models) {
-    for (let attempt = 0; attempt <= delays.length; attempt++) {
-      try {
-        onProgress?.(`THINK: Gemini AI analyzing (${model})…`);
-        const response = await getAI().models.generateContent({
-          model,
-          contents: prompt,
-          config: { temperature: 0 },  // deterministic scoring
-        });
-        return response.text ?? '';
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        const isRetryable = msg.includes('503') || msg.includes('UNAVAILABLE') ||
-                            msg.includes('429') || msg.includes('Too Many Requests');
-        if (isRetryable && attempt < delays.length) {
-          const wait = delays[attempt];
-          onProgress?.(`THINK: Model busy, retrying in ${wait / 1000}s…`);
-          await new Promise(r => setTimeout(r, wait));
-          continue;
-        }
-        // Not retryable or exhausted retries on this model — try next model
-        break;
+    try {
+      onProgress?.(`THINK: AI analyzing (${model})…`);
+      const response = await getAI().chat.completions.create({
+        model,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0,  // deterministic scoring
+      });
+      const content = response.choices[0]?.message?.content ?? '';
+      if (content) return content;
+      lastError = 'Empty response from model';
+    } catch (err: unknown) {
+      const status = (err as { status?: number }).status;
+      const msg = err instanceof Error ? err.message : String(err);
+      lastError = msg;
+      const isRateLimit  = status === 429 || msg.includes('429') || msg.includes('rate') || msg.includes('Too Many');
+      const isUnavailable = status === 503 || msg.includes('503') || msg.includes('UNAVAILABLE');
+      const isNotFound   = status === 404 || msg.includes('404') || msg.includes('No endpoints');
+
+      if (isRateLimit || isUnavailable) {
+        // Rate-limited on this model — try next immediately
+        onProgress?.(`THINK: ${model} rate-limited, trying next model…`);
+        continue;
       }
+      if (isNotFound) {
+        // Model doesn't exist — skip silently
+        continue;
+      }
+      // Unknown error — log and try next model
+      onProgress?.(`THINK: ${model} error, trying next model…`);
     }
   }
-  throw new Error('Gemini is currently unavailable. Please try again in a moment.');
+  throw new Error(
+    `All AI models are currently rate-limited. This is a temporary limit on free-tier OpenRouter models. Please wait a minute and try again. (${lastError.slice(0, 120)})`
+  );
 }
 
 export interface AgentAnalysisOptions {
@@ -91,7 +116,7 @@ export async function runCredChainAgent(
     reasoningSteps.push({ category: "data_gathering", reasoning: observeSummary, timestamp: Date.now() });
 
     // ── PHASE 2: THINK ───────────────────────────────────────
-    onProgress?.("THINK: Gemini AI analyzing patterns…");
+    onProgress?.("THINK: AI analyzing patterns…");
 
     const dataPayload = {
       walletAddress,
@@ -125,7 +150,7 @@ export async function runCredChainAgent(
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : rawText.trim();
       parsed = JSON.parse(jsonStr);
     } catch {
-      throw new Error(`Gemini returned non-JSON: ${rawText.slice(0, 300)}`);
+      throw new Error(`AI returned non-JSON: ${rawText.slice(0, 300)}`);
     }
 
     // Emit per-category reasoning
