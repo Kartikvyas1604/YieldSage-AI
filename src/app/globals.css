@@ -1,5 +1,22 @@
 @import 'tailwindcss';
 
+/* ============================================================
+   @theme inline — maps Tailwind utilities to CSS variables.
+   The "inline" keyword keeps values as var() references so
+   dark-mode switching (via .dark class) works at runtime.
+   ============================================================ */
+@theme inline {
+  --color-bg-primary:    var(--bg-primary);
+  --color-bg-secondary:  var(--bg-secondary);
+  --color-bg-card:       var(--bg-card);
+  --color-bg-hover:      var(--bg-hover);
+  --color-border:        var(--border);
+  --color-border-bright: var(--border-bright);
+  --color-text-primary:  var(--text-primary);
+  --color-text-secondary:var(--text-secondary);
+  --color-text-muted:    var(--text-muted);
+}
+
 /* =============================================
    CREDCHAIN — Pure Professional Black & White
    Light mode : white bg / black text

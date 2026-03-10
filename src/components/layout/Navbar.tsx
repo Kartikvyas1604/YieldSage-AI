@@ -11,7 +11,7 @@ export function Navbar() {
   const { connected } = useWallet();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 h-16 border-b border-border bg-bg-primary/95 backdrop-blur-sm">
+    <header className="fixed top-0 inset-x-0 z-50 h-16 border-b border-border backdrop-blur-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 95%, transparent)' }}>
       <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
