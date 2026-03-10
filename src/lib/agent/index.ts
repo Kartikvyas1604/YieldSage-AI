@@ -10,7 +10,13 @@ import { executeTool } from "./tools";
 import { calculateCredScore } from "./scoring";
 import { DEMO_CRED_SCORE } from "@/lib/data/mock";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "" });
+// Lazy client — instantiated on first request so build-time static analysis
+// doesn't fail when GEMINI_API_KEY is not set in the build environment.
+function getAI() {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
+  return new GoogleGenAI({ apiKey });
+}
 
 export interface AgentAnalysisOptions {
   walletAddress: string;
@@ -74,7 +80,7 @@ export async function runCredChainAgent(
 
     const prompt = `${CREDCHAIN_SYSTEM_PROMPT}\n\nAnalyze this Solana wallet and generate a comprehensive credit score: ${walletAddress}\n\nWallet History: ${JSON.stringify(walletHistory)}\n\nWallet Maturity: ${JSON.stringify(walletMaturity)}\n\nPlease analyze this data, then calculate a score from 0-850 based on the CredChain scoring methodology. Provide detailed reasoning for each category score.`;
 
-    let response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
     });
