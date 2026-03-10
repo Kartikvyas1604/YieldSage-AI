@@ -15,6 +15,39 @@ function getAI() {
   return new GoogleGenAI({ apiKey });
 }
 
+// Retry Gemini calls on transient 503/429 errors with exponential back-off.
+// Falls back to gemini-2.0-flash if 2.5-flash stays unavailable.
+async function generateWithRetry(
+  prompt: string,
+  onProgress?: (step: string) => void
+): Promise<string> {
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+  const delays = [3000, 6000, 12000]; // 3 s, 6 s, 12 s
+
+  for (const model of models) {
+    for (let attempt = 0; attempt <= delays.length; attempt++) {
+      try {
+        onProgress?.(`THINK: Gemini AI analyzing (${model})…`);
+        const response = await getAI().models.generateContent({ model, contents: prompt });
+        return response.text ?? '';
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        const isRetryable = msg.includes('503') || msg.includes('UNAVAILABLE') ||
+                            msg.includes('429') || msg.includes('Too Many Requests');
+        if (isRetryable && attempt < delays.length) {
+          const wait = delays[attempt];
+          onProgress?.(`THINK: Model busy, retrying in ${wait / 1000}s…`);
+          await new Promise(r => setTimeout(r, wait));
+          continue;
+        }
+        // Not retryable or exhausted retries on this model — try next model
+        break;
+      }
+    }
+  }
+  throw new Error('Gemini is currently unavailable. Please try again in a moment.');
+}
+
 export interface AgentAnalysisOptions {
   walletAddress: string;
   onReasoningUpdate?: (reasoning: string, category?: string) => void;
@@ -75,12 +108,7 @@ export async function runCredChainAgent(
       `\`\`\`json\n${JSON.stringify(dataPayload, null, 2)}\n\`\`\`\n\n` +
       `Generate the credit score JSON now. Return ONLY the JSON object.`;
 
-    const response = await getAI().models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-
-    const rawText = response.text ?? "";
+    const rawText = await generateWithRetry(prompt, onProgress);
 
     // ── PHASE 3: PARSE ───────────────────────────────────────
     onProgress?.("SCORE: Parsing AI score…");
