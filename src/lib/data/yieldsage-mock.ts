@@ -10,18 +10,32 @@ export const DEMO_USER = {
   wallet: 'Demo...Sage',
   walletFull: 'Demo7xYieldSageAI1234567890abcdef',
   initialDeposit: 500,
+  portfolioValue: 547.83,
   currentValue: 547.83,
   totalEarned: 47.83,
   percentGain: 9.57,
+  change24h: 0.71,
   daysActive: 67,
 
-  strategy: 'conservative' as const,
+  strategy: {
+    strategyId: 'conservative' as const,
+    deployedAt: Date.now() - 67 * 86400 * 1000,
+    currentAPY: 8.4,
+    principal: 500,
+    currentValue: 547.83,
+    earned: 47.83,
+    protocol: 'Kamino Finance',
+    status: 'active' as const,
+  },
   currentAPY: 8.4,
   protocol: 'Kamino Finance',
   safetyPercent: 94,
 
   creditScore: 452,
+  yieldScore: 452,
   creditTier: 'BUILDING' as ScoreTierLabel,
+  scoreTier: 'BUILDING',
+  scoreTierColor: '#4caf7d',
   scoreToNextTier: 198,
   nextTierName: 'Fair',
   nextTierScore: 650,
@@ -39,7 +53,7 @@ export const DEMO_USER = {
 
 // ── Earnings History (30 days) ───────────────────────────────
 
-export const EARNINGS_HISTORY: { date: string; value: number; earnings: number }[] = (() => {
+export const EARNINGS_HISTORY: { date: string; value: number; earned: number; cumulativeEarned: number }[] = (() => {
   const data = [];
   let cumulative = 500;
   const now = new Date();
@@ -50,7 +64,8 @@ export const EARNINGS_HISTORY: { date: string; value: number; earnings: number }
     data.push({
       date: date.toISOString().slice(0, 10),
       value: parseFloat(cumulative.toFixed(2)),
-      earnings: parseFloat(daily.toFixed(2)),
+      earned: parseFloat(daily.toFixed(2)),
+      cumulativeEarned: parseFloat(cumulative.toFixed(2)),
     });
   }
   return data;
@@ -58,7 +73,7 @@ export const EARNINGS_HISTORY: { date: string; value: number; earnings: number }
 
 // ── Score Breakdown ──────────────────────────────────────────
 
-export const SCORE_BREAKDOWN = {
+export const SCORE_BREAKDOWN_OBJ = {
   consistency: {
     score: 175,
     max: 297,
@@ -100,6 +115,14 @@ export const SCORE_BREAKDOWN = {
     color: '#d4a843',
   },
 };
+
+// Array version used by dashboard components
+export const SCORE_BREAKDOWN = [
+  { category: 'Consistency',    score: 175, max: 297, weight: 35, color: '#5b8c5a', description: 'How consistently you keep funds deployed' },
+  { category: 'Patience',       score: 143, max: 212, weight: 25, color: '#4caf7d', description: 'How long you hold your positions' },
+  { category: 'Responsibility', score: 78,  max: 170, weight: 20, color: '#e8a43a', description: 'No panic withdrawals during market drops' },
+  { category: 'Engagement',     score: 56,  max: 170, weight: 20, color: '#d4a843', description: 'Active on-chain, uses multiple protocols' },
+];
 
 // ── Score History (weekly snapshots) ────────────────────────
 

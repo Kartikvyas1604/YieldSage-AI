@@ -1,4 +1,6 @@
-'use client';
+const fs = require('fs');
+
+const content = `'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -84,7 +86,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-display text-2xl font-bold text-text-primary">
-              {isDemo ? `Hey, ${user.name} 👋` : 'Your Dashboard'}
+              {isDemo ? \`Hey, \${user.name} \u{1F44B}\` : 'Your Dashboard'}
             </h1>
             <p className="text-text-secondary text-sm mt-0.5">AI is watching your position 24/7</p>
           </div>
@@ -152,3 +154,7 @@ export default function DashboardPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync('./src/app/dashboard/page.tsx', content);
+console.log('Dashboard page written:', content.split('\n').length, 'lines');

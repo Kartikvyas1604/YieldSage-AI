@@ -66,8 +66,10 @@ export function AgentStatusCard({ status, lastAction, nextCheck, actionsToday = 
       {lastAction && (
         <div className="mt-4 p-3 rounded-lg text-sm" style={{ background: 'var(--bg-secondary)' }}>
           <p className="text-text-muted text-xs mb-1">Last action</p>
-          <p className="text-text-primary font-medium">{lastAction.description}</p>
-          <p className="text-text-muted text-xs mt-1">{lastAction.plainEnglish}</p>
+          <p className="text-text-primary font-medium">{lastAction.plainEnglish}</p>
+          {lastAction.reasoning && (
+            <p className="text-text-muted text-xs mt-1 line-clamp-1">{lastAction.reasoning}</p>
+          )}
         </div>
       )}
     </div>

@@ -60,8 +60,11 @@ export function ActionFeed({ logs, maxShown = 6 }: Props) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-text-primary font-medium leading-snug">{log.plainEnglish}</p>
-                  {log.txHash && (
-                    <p className="text-xs font-mono text-text-muted mt-0.5 truncate">tx: {log.txHash.slice(0, 12)}…</p>
+                  {log.reasoning && (
+                    <p className="text-xs text-text-muted mt-0.5 line-clamp-1">{log.reasoning}</p>
+                  )}
+                  {log.txSignature && (
+                    <p className="text-xs font-mono text-text-muted mt-0.5 truncate">tx: {log.txSignature.slice(0, 12)}…</p>
                   )}
                 </div>
                 <span className="text-xs text-text-muted whitespace-nowrap flex-shrink-0">
