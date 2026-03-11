@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { SCORE_TIERS } from '@/lib/utils/constants';
 
 const JOURNEY = [
   { tier: 'NEW',       range: '0–299',   strategy: 'Stable Yield (Kamino)', color: '#a09db8', weeks: 'Start' },

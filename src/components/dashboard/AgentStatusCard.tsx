@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Bot, CheckCircle, Clock, Pause } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bot, CheckCircle, Clock } from 'lucide-react';
 import { AIStatusDot } from '@/components/ui/AIThinking';
 import type { AgentActionLog } from '@/types/agent';
 
@@ -29,8 +29,13 @@ const STATUS_COLOR: Record<AgentStatus, string> = {
 };
 
 export function AgentStatusCard({ status, lastAction, nextCheck, actionsToday = 0 }: Props) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
   const minutesUntilNext = nextCheck
-    ? Math.max(0, Math.round((nextCheck - Date.now()) / 60000))
+    ? Math.max(0, Math.round((nextCheck - now) / 60000))
     : null;
 
   return (

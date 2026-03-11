@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Settings, Shield, Zap, Bell, Trash2, ChevronLeft,
+  Settings, Shield, Zap, Trash2, ChevronLeft,
   ToggleLeft, ToggleRight, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
 import { STRATEGIES } from '@/lib/agent/strategies';
@@ -33,6 +33,21 @@ const DEFAULT_SETTINGS: AgentSettings = {
 };
 
 const ALL_PROTOCOLS = ['Kamino Finance', 'Meteora DLMM', 'Orca Whirlpool', 'Jupiter', 'Marginfi'];
+
+function Toggle({
+  checked,
+  onChange,
+}: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      className="flex items-center transition-colors"
+      style={{ color: checked ? 'var(--accent-sage)' : 'var(--text-muted)' }}
+    >
+      {checked ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+    </button>
+  );
+}
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -74,19 +89,6 @@ export default function SettingsPage() {
         : [...s.approvedProtocols, protocol],
     }));
   }
-
-  const Toggle = ({
-    checked,
-    onChange,
-  }: { checked: boolean; onChange: (v: boolean) => void }) => (
-    <button
-      onClick={() => onChange(!checked)}
-      className="flex items-center transition-colors"
-      style={{ color: checked ? 'var(--accent-sage)' : 'var(--text-muted)' }}
-    >
-      {checked ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
-    </button>
-  );
 
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6" style={{ background: 'var(--bg-primary)' }}>

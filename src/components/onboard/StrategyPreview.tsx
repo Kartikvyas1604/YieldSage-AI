@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle, Shield, Zap, Leaf, ArrowRight } from 'lucide-react';
 import { STRATEGIES, estimateEarnings } from '@/lib/agent/strategies';
 import type { OnboardingAnswers } from '@/types/strategy';
