@@ -57,7 +57,15 @@ export async function POST(request: NextRequest) {
 
       // Calculate score from on-chain data
       const scoreResult = onChainData
-        ? calculateYieldSageScore(onChainData)
+        ? calculateYieldSageScore({
+            walletAgeDays:        onChainData.walletAgeDays,
+            daysInProtocol:       onChainData.defiActivity.lendingTxCount + onChainData.defiActivity.lpTxCount,
+            activeMonths:         Math.min(Math.round(onChainData.walletAgeDays / 30), 24),
+            noPanicWithdrawals:   onChainData.successfulTransactions > 10,
+            avgPositionDays:      Math.round(onChainData.walletAgeDays / Math.max(onChainData.defiActivity.lpTxCount, 1)),
+            protocolsUsed:        onChainData.defiActivity.lendingProtocols.length + onChainData.defiActivity.lpProtocols.length,
+            hasGovernanceVotes:   onChainData.defiActivity.governanceTxCount > 0,
+          })
         : null;
 
       await send({ type: 'progress', step: 'Running AI analysis…' });
@@ -67,7 +75,7 @@ export async function POST(request: NextRequest) {
       const userMessage = `Analyze this Solana wallet for YieldSage AI:
 Wallet: ${walletAddress}
 On-chain data: ${JSON.stringify(onChainData ?? 'unavailable', null, 2)}
-Current Score: ${scoreResult?.score ?? 'unknown'} / 850
+Current Score: ${scoreResult?.total ?? 'unknown'} / 850
 Score Tier: ${scoreResult?.tier ?? 'NEW'}
 
 Provide:
@@ -91,7 +99,7 @@ Provide:
       await send({ type: 'ai_analysis', text: aiText });
 
       if (scoreResult) {
-        await send({ type: 'score', score: scoreResult.score, tier: scoreResult.tier, breakdown: scoreResult.breakdown });
+        await send({ type: 'score', score: scoreResult.total, tier: scoreResult.tier, breakdown: scoreResult.breakdown });
       }
 
       await send({ type: 'done' });

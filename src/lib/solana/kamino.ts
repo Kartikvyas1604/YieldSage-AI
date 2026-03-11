@@ -87,7 +87,7 @@ export async function getTopKaminoStrategies(limit = 5): Promise<KaminoStrategyI
       apy7d: 12.3,
       apy30d: 11.8,
       fees24hUsd: 9400,
-      risk: "low",
+      risk: "low" as const,
     },
     {
       address: "KaminoStrat222222222222222222222222222222222",
@@ -98,7 +98,7 @@ export async function getTopKaminoStrategies(limit = 5): Promise<KaminoStrategyI
       apy7d: 18.7,
       apy30d: 16.2,
       fees24hUsd: 6100,
-      risk: "medium",
+      risk: "medium" as const,
     },
   ].slice(0, limit);
 }

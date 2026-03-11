@@ -97,7 +97,7 @@ export default function DashboardPage() {
           <div className="card p-5 mb-6 space-y-2 max-h-52 overflow-y-auto">
             <p className="text-xs font-mono text-text-muted uppercase tracking-widest mb-3">Live Agent Stream</p>
             {DEMO_AI_STREAM.slice(0, streamIdx + 1).map((msg, i) => (
-              <AIThinking key={i} message={msg} />
+              <AIThinking key={i} messages={[msg]} />
             ))}
           </div>
         )}

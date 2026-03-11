@@ -31,13 +31,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       address,
       solBalance: data.solBalance,
-      usdcBalance: data.defiActivity.totalValueLocked ?? 0,
+      usdcBalance: 0,
       walletAgeDays: data.walletAgeDays,
       totalTransactions: data.totalTransactions,
       defiActivity: {
         lendingProtocols: data.defiActivity.lendingProtocols,
         lpProtocols: data.defiActivity.lpProtocols,
-        hasGovernanceActivity: data.defiActivity.hasGovernanceActivity,
+        hasGovernanceActivity: data.defiActivity.governanceTxCount > 0,
       },
       timestamp: Date.now(),
     });

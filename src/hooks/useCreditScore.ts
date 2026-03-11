@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from "react";
 import type { YieldSageScore } from "@/lib/scoring/yieldsage-score";
+import type { ScoreTierLabel } from "@/types/strategy";
 import { DEMO_USER } from "@/lib/data/yieldsage-mock";
 
 interface UseCreditScoreReturn {
@@ -23,14 +24,14 @@ interface UseCreditScoreReturn {
 }
 
 // Simple in-memory cache: wallet → { data, fetchedAt }
-const scoreCache = new Map<string, { data: YieldSageScore & { tier: string; tierColor: string }; fetchedAt: number }>();
+const scoreCache = new Map<string, { data: YieldSageScore; fetchedAt: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 export function useCreditScore(
   walletAddress: string | null,
   demo = false
 ): UseCreditScoreReturn {
-  const [scoreData, setScoreData] = useState<(YieldSageScore & { tier: string; tierColor: string }) | null>(null);
+  const [scoreData, setScoreData] = useState<YieldSageScore | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
@@ -40,9 +41,9 @@ export function useCreditScore(
   useEffect(() => {
     if (demo) {
       // Build a synthetic YieldSageScore from DEMO_USER mock data
-      const synthetic = {
+      const synthetic: YieldSageScore = {
         total: DEMO_USER.yieldScore,
-        tier: DEMO_USER.scoreTier,
+        tier: DEMO_USER.scoreTier as ScoreTierLabel,
         tierColor: DEMO_USER.scoreTierColor,
         breakdown: {
           consistency:    { score: 212, max: 297, percent: 71 },
@@ -79,9 +80,9 @@ export function useCreditScore(
         if (!res.ok) throw new Error(`Score API returned ${res.status}`);
         const json = await res.json();
 
-        const data = {
+        const data: YieldSageScore = {
           total: json.score,
-          tier: json.tier,
+          tier: json.tier as ScoreTierLabel,
           tierColor: json.tierColor,
           breakdown: json.breakdown,
           pointsToNextTier: json.pointsToNextTier,

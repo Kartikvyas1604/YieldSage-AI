@@ -34,12 +34,12 @@ export async function GET(
         ? Math.min(onChainData.walletAgeDays, 365)
         : 0,
       activeMonths: Math.min(Math.floor(onChainData.walletAgeDays / 30), 24),
-      noPanicWithdrawals: !onChainData.defiActivity.liquidations,
+      noPanicWithdrawals: onChainData.successfulTransactions > 10,
       avgPositionDays: onChainData.walletAgeDays / Math.max(onChainData.totalTransactions / 10, 1),
       protocolsUsed:
         onChainData.defiActivity.lendingProtocols.length +
         onChainData.defiActivity.lpProtocols.length,
-      hasGovernanceVotes: onChainData.defiActivity.hasGovernanceActivity,
+      hasGovernanceVotes: onChainData.defiActivity.governanceTxCount > 0,
     });
 
     const tier = getScoreTier(score.total);

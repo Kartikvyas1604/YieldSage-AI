@@ -53,7 +53,7 @@ export function EarningsCard({ daily, weekly, monthly, allTime, history }: Props
               </defs>
               <XAxis dataKey="date" hide />
               <Tooltip
-                formatter={(v: number) => [`$${v.toFixed(2)}`, 'Earnings']}
+                formatter={(v) => [`$${Number(v).toFixed(2)}`, 'Earnings']}
                 contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
               />
               <Area type="monotone" dataKey="amount" stroke="#5b8c5a" strokeWidth={2} fill="url(#earningsGrad)" />

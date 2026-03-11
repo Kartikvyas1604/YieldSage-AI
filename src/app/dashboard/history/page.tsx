@@ -6,7 +6,7 @@ import { ArrowLeft, Activity } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { DEMO_ACTION_LOGS, EARNINGS_HISTORY } from '@/lib/data/yieldsage-mock';
 
-function timeAgo(ts) {
+function timeAgo(ts: number) {
   const s = Math.floor((Date.now() - ts) / 1000);
   if (s < 60)   return s + 's ago';
   if (s < 3600) return Math.floor(s / 60) + 'm ago';
@@ -60,9 +60,9 @@ export default function HistoryPage() {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-text-primary">{log.plainEnglish}</p>
-                  <p className="text-xs text-text-secondary mt-1">{log.description}</p>
-                  {log.txHash && (
-                    <p className="text-xs font-mono text-text-muted mt-1">tx: {log.txHash.slice(0, 20)}...</p>
+                  <p className="text-xs text-text-secondary mt-1">{log.reasoning}</p>
+                  {log.txSignature && (
+                    <p className="text-xs font-mono text-text-muted mt-1">tx: {log.txSignature.slice(0, 20)}...</p>
                   )}
                 </div>
                 <span className="text-xs text-text-muted whitespace-nowrap">{timeAgo(log.timestamp)}</span>

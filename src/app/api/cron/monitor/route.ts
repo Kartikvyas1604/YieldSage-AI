@@ -1,7 +1,7 @@
 /**
  * GET /api/cron/monitor
  * Vercel Cron job handler — monitors active positions and triggers rebalance if needed.
- * Called every 4 hours: { "schedule": "0 */4 * * *" }
+ * Called every 4 hours. Vercel cron schedule: "0 * /4 * * *" (remove space)
  * 
  * Requires Authorization: Bearer <CRON_SECRET>
  */
