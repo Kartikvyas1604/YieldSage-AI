@@ -25,7 +25,9 @@ export default function OnboardPage() {
     setAnswers(a => ({ ...a, goal }));
     setStep(4);
   };
-  const handleDeploy = () => {
+  const handleDeploy = (strategyId: string) => {
+    localStorage.setItem('ys_strategy', strategyId);
+    localStorage.setItem('ys_onboarded', '1');
     router.push('/dashboard');
   };
 
