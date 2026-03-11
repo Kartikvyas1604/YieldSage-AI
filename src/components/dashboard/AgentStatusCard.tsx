@@ -34,8 +34,8 @@ export function AgentStatusCard({ status, lastAction, nextCheck, actionsToday = 
     : null;
 
   return (
-    <div className="card p-6">
-      <div className="flex items-center justify-between mb-5">
+    <div className="card p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
             style={{ background: 'rgba(91,140,90,0.12)' }}>
@@ -46,11 +46,11 @@ export function AgentStatusCard({ status, lastAction, nextCheck, actionsToday = 
         <AIStatusDot active={status !== 'paused'} />
       </div>
 
-      <p className="text-xl font-semibold text-text-primary mb-1" style={{ color: STATUS_COLOR[status] }}>
+      <p className="text-lg sm:text-xl font-semibold text-text-primary mb-1" style={{ color: STATUS_COLOR[status] }}>
         {STATUS_LABEL[status]}
       </p>
 
-      <div className="flex items-center gap-4 mt-3 text-sm text-text-muted">
+      <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-text-muted">
         {minutesUntilNext !== null && (
           <span className="flex items-center gap-1">
             <Clock size={12} />

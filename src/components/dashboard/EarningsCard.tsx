@@ -16,7 +16,7 @@ interface Props {
 
 export function EarningsCard({ daily, weekly, monthly, allTime, history }: Props) {
   return (
-    <div className="card p-6">
+    <div className="card p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-5">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
           style={{ background: 'rgba(91,140,90,0.12)' }}>
@@ -25,14 +25,14 @@ export function EarningsCard({ daily, weekly, monthly, allTime, history }: Props
         <span className="text-sm font-medium text-text-secondary">Earnings</span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-5">
         {([
           ['Today', daily],
           ['This week', weekly],
           ['This month', monthly],
           ['All time', allTime],
         ] as const).map(([label, val]) => (
-          <div key={label} className="text-center p-3 rounded-xl" style={{ background: 'var(--bg-secondary)' }}>
+          <div key={label} className="text-center p-2 sm:p-3 rounded-xl" style={{ background: 'var(--bg-secondary)' }}>
             <p className="text-base font-mono font-bold" style={{ color: 'var(--accent-sage)' }}>
               ${val.toFixed(2)}
             </p>

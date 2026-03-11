@@ -117,8 +117,8 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2 space-y-5">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-5">
             <PortfolioCard
               totalValue={user.portfolioValue}
               totalEarned={user.totalEarned}
@@ -132,9 +132,13 @@ export default function DashboardPage() {
               allTime={user.totalEarned}
               history={earningsHistory}
             />
+            {/* Polymarket risk panel — macro signals before moving money */}
+            <PolymarketRiskPanel riskData={polyRiskData} />
+            {/* Smart LP signals — MetEngine-inspired */}
+            <SmartSignalFeed signals={smartSignals} />
             <ActionFeed logs={DEMO_ACTION_LOGS} />
           </div>
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5">
             <AgentStatusCard
               status={isPaused ? 'paused' : 'monitoring'}
               lastAction={DEMO_ACTION_LOGS[0]}

@@ -36,21 +36,21 @@ const STEPS = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-24 px-6 bg-bg-secondary">
+    <section id="how-it-works" className="py-16 sm:py-24 px-4 sm:px-6 bg-bg-secondary">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-sm font-mono text-text-muted uppercase tracking-widest mb-3">Simple Process</p>
-          <h2 className="font-display text-4xl font-bold text-text-primary mb-4">
+        <div className="text-center mb-10 sm:mb-16">
+          <p className="text-xs sm:text-sm font-mono text-text-muted uppercase tracking-widest mb-3">Simple Process</p>
+          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-4">
             We Ask 3 Questions. AI Does The Rest.
           </h2>
-          <p className="text-text-secondary text-lg max-w-xl mx-auto">
+          <p className="text-text-secondary text-base sm:text-lg max-w-xl mx-auto">
             No jargon. No complex forms. No DeFi experience required. Just honest answers about your money goals.
           </p>
         </div>
 
         {/* Steps */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {STEPS.map(({ icon: Icon, step, title, desc, detail }, i) => (
             <div key={step} className="relative">
               {/* Arrow connector */}
@@ -59,8 +59,8 @@ export function HowItWorksSection() {
                   <ArrowRight size={16} className="text-text-muted" />
                 </div>
               )}
-              <div className="card card-hover p-6 h-full">
-                <div className="flex items-center gap-3 mb-4">
+              <div className="card card-hover p-4 sm:p-6 h-full">
+                <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{ background: 'rgba(91,140,90,0.1)' }}
@@ -69,8 +69,8 @@ export function HowItWorksSection() {
                   </div>
                   <span className="font-mono text-xs text-text-muted">{step}</span>
                 </div>
-                <h3 className="font-semibold text-text-primary mb-2">{title}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed mb-3">{desc}</p>
+                <h3 className="font-semibold text-text-primary mb-2 text-sm sm:text-base">{title}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed mb-2 sm:mb-3">{desc}</p>
                 <p className="text-xs text-text-muted leading-relaxed">{detail}</p>
               </div>
             </div>

@@ -17,7 +17,7 @@ export function PortfolioCard({ totalValue, totalEarned, strategy, change24h = 0
   const pct = totalValue > 0 ? (totalEarned / totalValue) * 100 : 0;
 
   return (
-    <div className="card p-6">
+    <div className="card p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -31,7 +31,7 @@ export function PortfolioCard({ totalValue, totalEarned, strategy, change24h = 0
 
       <EarningsCounter
         value={totalValue}
-        className="text-4xl font-mono font-bold text-text-primary"
+        className="text-3xl sm:text-4xl font-mono font-bold text-text-primary"
         prefix="$"
         decimals={2}
       />

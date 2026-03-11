@@ -86,7 +86,7 @@ export function Navbar() {
           <ClientWalletButton />
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden p-2 rounded-lg border border-border text-text-secondary"
+            className="md:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg border border-border text-text-secondary"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -97,9 +97,9 @@ export function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden absolute top-16 inset-x-0 bg-bg-card border-b border-border shadow-lg p-4 flex flex-col gap-3">
-          <Link href="/#how-it-works" className="text-sm text-text-secondary py-2" onClick={() => setMenuOpen(false)}>How it works</Link>
-          <Link href="/#strategies" className="text-sm text-text-secondary py-2" onClick={() => setMenuOpen(false)}>Strategies</Link>
-          <Link href="/#sage-token" className="text-sm text-text-secondary py-2" onClick={() => setMenuOpen(false)}>$SAGE Token</Link>
+          <Link href="/#how-it-works" className="text-sm text-text-secondary py-3 min-h-[44px] flex items-center" onClick={() => setMenuOpen(false)}>How it works</Link>
+          <Link href="/#strategies" className="text-sm text-text-secondary py-3 min-h-[44px] flex items-center" onClick={() => setMenuOpen(false)}>Strategies</Link>
+          <Link href="/#sage-token" className="text-sm text-text-secondary py-3 min-h-[44px] flex items-center" onClick={() => setMenuOpen(false)}>$SAGE Token</Link>
           {connected && (
             <Link href="/dashboard" className="btn-outline text-sm text-center" onClick={() => setMenuOpen(false)}>Dashboard</Link>
           )}

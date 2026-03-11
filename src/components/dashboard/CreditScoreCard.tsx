@@ -23,8 +23,8 @@ interface Props {
 
 export function CreditScoreCard({ score, tier, tierColor, nextTier, pointsToNext, categories = [] }: Props) {
   return (
-    <div className="card p-6">
-      <div className="flex items-center justify-between mb-5">
+    <div className="card p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
             style={{ background: 'rgba(91,140,90,0.12)' }}>
@@ -38,10 +38,10 @@ export function CreditScoreCard({ score, tier, tierColor, nextTier, pointsToNext
         </Link>
       </div>
 
-      <div className="flex items-center gap-6 mb-4">
-        <ScoreRing score={score} size={90} strokeWidth={8} color={tierColor} />
+      <div className="flex items-center gap-4 sm:gap-6 mb-4">
+        <ScoreRing score={score} size={80} strokeWidth={7} color={tierColor} />
         <div>
-          <p className="text-2xl font-mono font-bold text-text-primary">{score}</p>
+          <p className="text-xl sm:text-2xl font-mono font-bold text-text-primary">{score}</p>
           <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold mt-1"
             style={{ background: tierColor + '22', color: tierColor }}>
             {tier}

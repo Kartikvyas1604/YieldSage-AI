@@ -13,7 +13,7 @@ export function EmergencyStop({ onPause, onWithdraw, isPaused = false }: Props) 
   const [confirmWithdraw, setConfirmWithdraw] = useState(false);
 
   return (
-    <div className="card p-6 border-2" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
+    <div className="card p-4 sm:p-6 border-2" style={{ borderColor: 'rgba(239,68,68,0.15)' }}>
       <div className="flex items-center gap-2 mb-4">
         <ShieldAlert size={18} style={{ color: '#ef4444' }} />
         <span className="text-sm font-semibold" style={{ color: '#ef4444' }}>Emergency Controls</span>

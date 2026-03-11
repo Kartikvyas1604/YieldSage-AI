@@ -36,8 +36,8 @@ export function ActionFeed({ logs, maxShown = 6 }: Props) {
   const shown = logs.slice(0, maxShown);
 
   return (
-    <div className="card p-6">
-      <div className="flex items-center gap-2 mb-5">
+    <div className="card p-4 sm:p-6">
+      <div className="flex items-center gap-2 mb-4 sm:mb-5">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
           style={{ background: 'rgba(91,140,90,0.12)' }}>
           <Activity size={16} style={{ color: 'var(--accent-sage)' }} />
