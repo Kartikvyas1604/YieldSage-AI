@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -51,21 +51,16 @@ function Toggle({
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [settings, setSettings] = useState<AgentSettings>(DEFAULT_SETTINGS);
-  const [saved, setSaved] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  const [settings, setSettings] = useState<AgentSettings>(() => {
+    if (typeof window === 'undefined') return DEFAULT_SETTINGS;
     const stored = localStorage.getItem('ys_settings');
     if (stored) {
-      try {
-        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
-      } catch {
-        // ignore parse errors
-      }
+      try { return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) }; } catch { /* ignore */ }
     }
-  }, []);
+    return DEFAULT_SETTINGS;
+  });
+  const [saved, setSaved] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   function save() {
     localStorage.setItem('ys_settings', JSON.stringify(settings));

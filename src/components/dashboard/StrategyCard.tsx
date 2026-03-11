@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Zap, TrendingUp, Shield, ExternalLink } from 'lucide-react';
+import { Zap, Shield, ExternalLink } from 'lucide-react';
 import type { UserStrategy } from '@/types/strategy';
 
 interface Props {

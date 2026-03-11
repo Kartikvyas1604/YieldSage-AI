@@ -19,7 +19,7 @@ interface Props {
   onBack?: () => void;
 }
 
-export function StrategyPreview({ answers, capital = 1000, onDeploy, onBack }: Props) {
+export function StrategyPreview({ answers, capital = 1000, onDeploy }: Props) {
   const key = chooseStrategy(answers);
   const strategy = STRATEGIES[key];
   const midAPY = (strategy.targetAPY.min + strategy.targetAPY.max) / 2;

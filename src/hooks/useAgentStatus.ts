@@ -65,10 +65,12 @@ export function useAgentStatus(
   useEffect(() => {
     if (!demo) return;
 
-    // Seed with existing logs
-    setActionFeed(DEMO_ACTION_LOGS.slice(0, 5));
-    setLatestAction(DEMO_ACTION_LOGS[0]);
-    setStatus("monitoring");
+    // Seed with existing logs asynchronously to avoid setState-in-effect cascade
+    setTimeout(() => {
+      setActionFeed(DEMO_ACTION_LOGS.slice(0, 5));
+      setLatestAction(DEMO_ACTION_LOGS[0]);
+      setStatus("monitoring");
+    }, 0);
 
     checkTimerRef.current = setInterval(() => {
       if (!isPaused) runDemoCycle();
