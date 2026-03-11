@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import { Playfair_Display, JetBrains_Mono, DM_Sans } from "next/font/google";
+import { Lora, JetBrains_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/layout/Navbar";
 
-const playfair = Playfair_Display({
+const lora = Lora({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const dmSans = DM_Sans({
@@ -23,19 +23,19 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CredChain AI — On-Chain Credit Intelligence on Solana",
-  description: "The world's first AI-powered on-chain credit scoring agent. Prove your trustworthiness. Unlock undercollateralized lending.",
-  keywords: ["Solana", "DeFi", "Credit Score", "AI", "Blockchain", "Lending"],
-  authors: [{ name: "CredChain AI" }],
+  title: "YieldSage AI — DeFi on Autopilot for Everyone",
+  description: "YieldSage AI manages your Solana DeFi portfolio automatically. No experience needed — just answer 3 questions and let AI do the rest.",
+  keywords: ["Solana", "DeFi", "Yield", "AI Agent", "LP Management", "Kamino", "Meteora", "Credit Score"],
+  authors: [{ name: "YieldSage AI" }],
   openGraph: {
-    title: "CredChain AI — On-Chain Credit Intelligence",
-    description: "The world's first AI-powered on-chain credit scoring agent on Solana",
+    title: "YieldSage AI — Your Money. Growing. On Autopilot.",
+    description: "AI-managed DeFi yield on Solana. No experience needed.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CredChain AI",
-    description: "Your on-chain history. Your financial identity.",
+    title: "YieldSage AI",
+    description: "DeFi made simple. AI does everything.",
   },
 };
 
@@ -45,11 +45,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
-        className={`${playfair.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased font-sans bg-bg-primary`}
+        className={`${lora.variable} ${jetbrainsMono.variable} ${dmSans.variable} antialiased bg-bg-primary`}
       >
-        <div className="bg-noise" />
         <Providers>
           <Navbar />
           {children}

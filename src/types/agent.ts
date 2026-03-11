@@ -1,10 +1,105 @@
-// CredChain AI Agent Types
+// YieldSage AI — Agent Type Definitions
+
+import type { StrategyId } from './strategy';
+
+export type AgentTrigger = 'onboard' | 'monitor' | 'manual' | 'emergency';
+export type ActionType = 'deploy' | 'rebalance' | 'exit' | 'monitor' | 'improve' | 'emergency_protect';
+export type StreamMessageType = 'observe' | 'think' | 'act' | 'report' | 'error';
 
 export interface AgentPermissions {
   canMintNFT: boolean;
   canUpdateScore: boolean;
   accessLevel: 'demo' | 'basic' | 'full';
+  agentPaused: boolean;
+  autoApproveLimit: number;
+  dailySpendLimit: number;
+  leverageEnabled: boolean;
+  approvedProtocols: string[];
+  maxRiskLevel: number;
 }
+
+export interface AgentTool {
+  name: string;
+  description: string;
+  input_schema: {
+    type: string;
+    properties: Record<string, unknown>;
+    required?: string[];
+  };
+}
+
+export interface ToolUseBlock {
+  id: string;
+  type: 'tool_use';
+  name: string;
+  input: Record<string, unknown>;
+}
+
+export interface ToolResultBlock {
+  type: 'tool_result';
+  tool_use_id: string;
+  content: string | Record<string, unknown>;
+}
+
+export interface AgentMessage {
+  role: 'user' | 'assistant';
+  content: string | Array<ToolUseBlock | ToolResultBlock | { type: 'text'; text: string }>;
+}
+
+export interface AgentAction {
+  type: ActionType;
+  protocol: string;
+  amount?: number;
+  strategyId?: StrategyId;
+  riskLevel: number;
+  reasoning: string;
+  estimatedImpact?: string;
+}
+
+export interface AgentActionLog {
+  id: string;
+  timestamp: number;
+  type: ActionType;
+  plainEnglish: string;
+  reasoning: string;
+  impact: string | null;
+  result: 'success' | 'pending' | 'failed' | 'all_clear';
+  txSignature?: string;
+  amountUsd?: number;
+}
+
+export interface StreamMessage {
+  type: StreamMessageType;
+  message: string;
+  timestamp?: number;
+}
+
+export interface AgentDecision {
+  recommendedStrategy: StrategyId;
+  actionsToTake: AgentAction[];
+  reasoning: string;
+  userMessage: string;
+  riskLevel: number;
+  estimatedOutcome: {
+    dailyEarningsUsd: number;
+    monthlyEarningsUsd: number;
+    apy: number;
+  };
+  creditScoreUpdate?: {
+    delta: number;
+    reason: string;
+  };
+}
+
+export interface AgentAnalysisResult {
+  success: boolean;
+  decision?: AgentDecision;
+  actionLogs: AgentActionLog[];
+  newCreditScore?: number;
+  streamMessages: StreamMessage[];
+  error?: string;
+}
+
 
 export interface AgentTool {
   name: string;
