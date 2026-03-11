@@ -33,32 +33,32 @@ export function HeroSection() {
         style={{ background: 'radial-gradient(ellipse, var(--accent-sage) 0%, transparent 70%)' }}
       />
 
-      <div className="relative max-w-6xl mx-auto px-6 py-24 w-full">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
 
           {/* Left — Copy */}
           <div>
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full text-xs font-mono border"
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 sm:mb-8 rounded-full text-xs font-mono border"
               style={{ borderColor: 'var(--accent-sage)', color: 'var(--accent-sage)', background: 'rgba(91,140,90,0.08)' }}>
               <AIStatusDot active />
               AI Agent Active · Monitoring 24/7
             </div>
 
             {/* Headline */}
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-text-primary mb-6 leading-[1.1]">
+            <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-text-primary mb-4 sm:mb-6 leading-[1.1]">
               Your Money.<br />
               <span style={{ color: 'var(--accent-sage)' }}>Growing.</span><br />
               On Autopilot.
             </h1>
 
-            <p className="text-lg text-text-secondary max-w-lg leading-relaxed mb-8">
+            <p className="text-base sm:text-lg text-text-secondary max-w-lg leading-relaxed mb-6 sm:mb-8">
               YieldSage AI manages your crypto savings on Solana — completely automatically.
               Answer 3 questions, deploy in 1 click, earn yield forever. No experience needed.
             </p>
 
             {/* Trust badges */}
-            <div className="flex flex-wrap gap-3 mb-10">
+            <div className="flex flex-wrap gap-2 mb-8 sm:mb-10">
               {[
                 { icon: Shield,    text: 'Read-only risk analysis' },
                 { icon: Cpu,       text: '1-click deploy' },
@@ -72,8 +72,8 @@ export function HeroSection() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4">
-              <Link href="/onboard" className="btn-sage text-base px-7 py-3.5">
+            <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4">
+              <Link href="/onboard" className="btn-sage text-sm sm:text-base px-5 sm:px-7 py-3 sm:py-3.5 justify-center">
                 Start Earning in 2 Minutes <ArrowRight size={18} />
               </Link>
               <button
