@@ -1,4 +1,4 @@
-// CredChain AI Utility Functions
+// YieldSage AI Utility Functions
 
 /**
  * Format numbers with commas

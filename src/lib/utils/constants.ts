@@ -1,4 +1,29 @@
-// CredChain AI Constants
+// YieldSage AI Constants
+
+export const APP_NAME = 'YieldSage AI';
+export const APP_TAGLINE = 'Your Money. Growing. On Autopilot.';
+
+export const SAGE_TOKEN_MINT = process.env.NEXT_PUBLIC_SAGE_TOKEN_MINT || 'SAGExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+
+export const SAGE_TIERS = {
+  FREE: { minTokens: 0, label: 'Free', maxCapital: 1000, monitorFreq: '60min' },
+  STARTER: { minTokens: 1000, label: 'Starter', maxCapital: 10000, monitorFreq: '30min' },
+  PRO: { minTokens: 10000, label: 'Pro', maxCapital: 100000, monitorFreq: '10min' },
+  ELITE: { minTokens: 50000, label: 'Elite', maxCapital: null, monitorFreq: '5min' },
+} as const;
+
+export const SCORE_TIERS = {
+  NEW:       { min: 0,   max: 299,  label: 'New',       color: '#a09db8', unlocksStrategy: 'conservative' },
+  BUILDING:  { min: 300, max: 499,  label: 'Building',  color: '#e8a43a', unlocksStrategy: 'conservative' },
+  FAIR:      { min: 500, max: 649,  label: 'Fair',      color: '#5b8c5a', unlocksStrategy: 'balanced' },
+  GOOD:      { min: 650, max: 749,  label: 'Good',      color: '#4caf7d', unlocksStrategy: 'growth' },
+  EXCELLENT: { min: 750, max: 850,  label: 'Excellent', color: '#d4a843', unlocksStrategy: 'all_plus_loans' },
+} as const;
+
+export const HELIUS_RPC_URL = process.env.NEXT_PUBLIC_HELIUS_RPC_URL || 'https://api.mainnet-beta.solana.com';
+
+export const DEMO_MODE_KEY = 'yieldsage_demo_mode';
+export const DEMO_WALLET   = 'Demo7xYieldSageAI1234567890abcdef';
 
 // Scoring Configuration
 export const SCORE_RANGES = {
