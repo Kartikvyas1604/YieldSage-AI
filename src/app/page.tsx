@@ -1,15 +1,19 @@
 import { HeroSection } from '@/components/landing/HeroSection';
-import { ProblemSection } from '@/components/landing/ProblemSection';
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection';
-import { ScoreFactorsSection } from '@/components/landing/ScoreFactorsSection';
+import { StrategyTiersSection } from '@/components/landing/StrategyTiersSection';
+import { ScoreJourneySection } from '@/components/landing/ScoreJourneySection';
+import { SageTokenSection } from '@/components/landing/SageTokenSection';
+import { TrustSection } from '@/components/landing/TrustSection';
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection />
-      <ProblemSection />
       <HowItWorksSection />
-      <ScoreFactorsSection />
+      <StrategyTiersSection />
+      <ScoreJourneySection />
+      <SageTokenSection />
+      <TrustSection />
     </main>
   );
 }
