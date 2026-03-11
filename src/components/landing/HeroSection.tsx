@@ -76,9 +76,15 @@ export function HeroSection() {
               <Link href="/onboard" className="btn-sage text-base px-7 py-3.5">
                 Start Earning in 2 Minutes <ArrowRight size={18} />
               </Link>
-              <Link href="/#how-it-works" className="btn-outline text-base px-7 py-3.5">
-                See How It Works
-              </Link>
+              <button
+                onClick={() => {
+                  localStorage.setItem('ys_demo', '1');
+                  window.location.href = '/dashboard';
+                }}
+                className="btn-outline text-base px-7 py-3.5"
+              >
+                Try Demo
+              </button>
             </div>
 
             {/* Social proof */}

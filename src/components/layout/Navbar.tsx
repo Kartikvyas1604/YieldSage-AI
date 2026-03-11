@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { ClientWalletButton } from '@/components/wallet/ClientWalletButton';
-import { LayoutGrid, Leaf, Menu, X } from 'lucide-react';
+import { LayoutGrid, Leaf, Menu, X, Settings } from 'lucide-react';
 
 export function Navbar() {
   const { connected } = useWallet();
@@ -65,6 +65,14 @@ export function Navbar() {
               className="hidden sm:inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border border-border text-text-secondary hover:text-accent-sage hover:border-accent-sage transition-all"
             >
               <LayoutGrid size={14} /> Dashboard
+            </Link>
+          )}
+          {connected && (
+            <Link
+              href="/dashboard/settings"
+              className="hidden sm:inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border border-border text-text-secondary hover:text-accent-sage hover:border-accent-sage transition-all"
+            >
+              <Settings size={14} />
             </Link>
           )}
           {!connected && (
