@@ -267,3 +267,112 @@ export async function executeTool(
   if (!addr) return { error: 'Missing wallet_address param' };
   return fetchWalletOnChainData(addr);
 }
+
+// ── Claude AI Tool Definitions ────────────────────────────────
+// These are passed to the Anthropic API as available tools
+// for the YieldSage AI agent loop.
+
+export const YIELDSAGE_TOOLS = [
+  {
+    name: 'fetch_wallet_data',
+    description:
+      'Fetch on-chain wallet data from Solana mainnet including SOL balance, token holdings, transaction history, and DeFi protocol interactions. Use this to analyze any wallet.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        wallet_address: {
+          type: 'string',
+          description: 'Solana wallet address (base58)',
+        },
+      },
+      required: ['wallet_address'],
+    },
+  },
+  {
+    name: 'read_polymarket_signals',
+    description:
+      'Read Polymarket prediction market odds for Solana/crypto-relevant events to assess macro risk before making strategy changes. Polymarket is >94% accurate 1 month before resolution. Call this FIRST in every monitoring cycle before deciding on rebalancing.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        risk_categories: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: ['CRASH', 'SURGE', 'SYSTEMIC', 'STABLE'],
+          },
+          description: 'Which Polymarket risk categories to check',
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_smart_wallet_signals',
+    description:
+      'Get recent moves by top-performing LP wallets on Meteora DLMM. Inspired by MetEngine approach. Returns signals about what profitable wallets are entering/exiting. Use AI reasoning to decide whether to follow each signal based on user risk profile.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        user_risk_profile: {
+          type: 'string',
+          enum: ['conservative', 'balanced', 'growth'],
+          description: "User's risk profile to filter signals against",
+        },
+      },
+      required: ['user_risk_profile'],
+    },
+  },
+  {
+    name: 'get_kamino_market_data',
+    description:
+      'Fetch live Kamino Finance lending market data including current USDC APY, SOL APY, utilization rates, and TVL. Use when deciding Conservative strategy allocation.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'get_meteora_pools',
+    description:
+      'Fetch top Meteora DLMM pools by fee APY. Use when selecting the best pool for the Balanced strategy. Returns pool name, APY, TVL, IL risk, and recommended bin range.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        min_apy: {
+          type: 'number',
+          description: 'Minimum fee APY to filter pools (e.g. 15)',
+        },
+        stable_only: {
+          type: 'boolean',
+          description: 'Only return stable-pair pools (lower IL risk)',
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_jupiter_quote',
+    description:
+      'Get best swap quote from Jupiter for a token pair. Use before any rebalancing action to show user the cost and price impact. Jupiter routes through all Solana DEXs for the best rate.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        from_token: {
+          type: 'string',
+          description: 'Source token symbol (USDC, SOL, etc.)',
+        },
+        to_token: {
+          type: 'string',
+          description: 'Destination token symbol',
+        },
+        amount_usd: {
+          type: 'number',
+          description: 'Amount in USD to swap',
+        },
+      },
+      required: ['from_token', 'to_token', 'amount_usd'],
+    },
+  },
+];

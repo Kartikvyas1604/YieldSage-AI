@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { Wallet, RefreshCw, Leaf } from 'lucide-react';
+import { Wallet, RefreshCw, Leaf, Puzzle } from 'lucide-react';
+import Link from 'next/link';
 import { PortfolioCard }   from '@/components/dashboard/PortfolioCard';
 import { EarningsCard }    from '@/components/dashboard/EarningsCard';
 import { AgentStatusCard } from '@/components/dashboard/AgentStatusCard';
@@ -11,6 +12,8 @@ import { CreditScoreCard } from '@/components/dashboard/CreditScoreCard';
 import { StrategyCard }    from '@/components/dashboard/StrategyCard';
 import { ActionFeed }      from '@/components/dashboard/ActionFeed';
 import { EmergencyStop }   from '@/components/dashboard/EmergencyStop';
+import { SmartSignalFeed } from '@/components/dashboard/SmartSignalFeed';
+import { PolymarketRiskPanel } from '@/components/dashboard/PolymarketRiskPanel';
 import { AIThinking }      from '@/components/ui/AIThinking';
 import {
   DEMO_USER,
@@ -19,6 +22,8 @@ import {
   DEMO_ACTION_LOGS,
   DEMO_AI_STREAM,
 } from '@/lib/data/yieldsage-mock';
+import { getDemoSignals } from '@/lib/integrations/smart-wallet-tracker-demo';
+import { getDemoRiskData } from '@/lib/integrations/polymarket-demo';
 
 function ConnectPrompt() {
   const { setVisible } = useWalletModal();
@@ -66,6 +71,8 @@ export default function DashboardPage() {
   const user = DEMO_USER;
   const earningsHistory = EARNINGS_HISTORY.map(e => ({ date: e.date, amount: e.cumulativeEarned }));
   const scoreCategories = SCORE_BREAKDOWN.map(b => ({ label: b.category, score: b.score, max: b.max, color: b.color }));
+  const smartSignals = getDemoSignals();
+  const polyRiskData = getDemoRiskData();
 
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6" style={{ background: 'var(--bg-primary)' }}>
@@ -81,16 +88,24 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
           <div>
-            <h1 className="font-display text-2xl font-bold text-text-primary">
+            <h1 className="font-display text-xl sm:text-2xl font-bold text-text-primary">
               {isDemo ? `Hey, ${user.name} 👋` : 'Your Dashboard'}
             </h1>
             <p className="text-text-secondary text-sm mt-0.5">AI is watching your position 24/7</p>
           </div>
-          <button onClick={() => setShowStream(s => !s)} className="btn-outline text-sm px-4 py-2 flex items-center gap-2">
-            <RefreshCw size={14} /> {showStream ? 'Hide' : 'Show'} AI
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Link
+              href="/dashboard/integrations"
+              className="btn-outline text-xs sm:text-sm px-3 py-2 flex items-center gap-2"
+            >
+              <Puzzle size={14} /> Integrations
+            </Link>
+            <button onClick={() => setShowStream(s => !s)} className="btn-outline text-xs sm:text-sm px-3 sm:px-4 py-2 flex items-center gap-2">
+              <RefreshCw size={14} /> {showStream ? 'Hide' : 'Show'} AI
+            </button>
+          </div>
         </div>
 
         {showStream && (
