@@ -1,359 +1,135 @@
-# 🏆 CredChain AI — On-Chain Credit Intelligence
+# YieldSage AI — Automated DeFi Yield for Everyone
 
-> **The World's First AI-Powered Credit Score on Solana**
-
----
-
-## 🌟 Overview
-
-**CredChain AI** is a revolutionary on-chain credit scoring system that uses Claude AI to analyze complete Solana wallet history and generate trustless credit scores (0-850). Like FICO for DeFi, but 100% transparent, verifiable, and on-chain.
-
-### The Problem
-
-Every DeFi lending protocol today requires **$150 collateral to borrow $100**. 
-
-- **$50 TRILLION** in value is locked up unnecessarily
-- No credit history exists on-chain
-- Good borrowers pay for bad actors' defaults
-- Capital inefficiency kills DeFi adoption
-
-### The Solution
-
-CredChain reads your complete on-chain history and proves your trustworthiness with a verifiable, AI-generated credit score, unlocking:
-
-✅ **Undercollateralized loans** (borrow $100 with $80 collateral)  
-✅ **Lower interest rates** (3% vs 8% for unscored users)  
-✅ **Exclusive protocol access** (DAO whitelists, token launches)  
-✅ **Portable reputation** (soulbound NFT credential)
+> The AI agent that grows your crypto savings on autopilot — no experience needed.
 
 ---
 
-## 🚀 Quick Start
+## What is YieldSage AI?
 
-### Prerequisites
+YieldSage AI is a DeFi yield automation platform on Solana that lets anyone — even complete beginners — earn passive income from DeFi. You answer 3 questions, and an AI agent does everything else: picks your strategy, deploys your capital, monitors positions 24/7, auto-compounds fees, and exits bad trades automatically.
 
-- Node.js 18+
-- npm or yarn
-- Phantom wallet (for live mode)
+**Key differentiator:** A unique Yield Score (like a DeFi credit score) that tracks your patience and discipline as an investor, unlocking better strategies over time.
 
-### Installation
+---
 
+## Features
+
+- AI Agent: Claude claude-3-5-haiku-20241022 analyzes your on-chain history and picks the optimal strategy
+- Yield Score: 0-850 score measuring consistency, patience, responsibility, and engagement  
+- 3-Strategy System: Conservative (12% APY), Balanced (18% APY), Growth (28% APY)
+- Auto-Rebalance: Agent monitors every 4 hours and shifts capital to highest-yield pools
+- Emergency Stop: One-click pause or full withdrawal at any time
+- Demo Mode: Full interactive demo — no wallet required
+- Mobile Responsive: Works seamlessly on any device
+
+---
+
+## Architecture
+
+```
+Next.js App Router
+├── Landing Page (6 sections)
+├── Onboarding (3-step quiz)
+├── Dashboard (7 cards + score/history/settings pages)
+└── API Routes
+    ├── /api/agent/{analyze,onboard,deploy,rebalance}
+    ├── /api/score/{calculate,[wallet]}
+    ├── /api/wallet/{balance,history}
+    └── /api/cron/monitor
+
+AI Engine: Anthropic Claude claude-3-5-haiku-20241022 (SSE streaming)
+Solana: Helius RPC + Kamino Finance + Meteora DLMM + Jupiter Aggregator
+```
+
+---
+
+## Quick Start
+
+1. Clone and install:
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/credchain-ai
-cd credchain-ai
-
-# Install dependencies
+git clone https://github.com/your-username/yieldsage-ai
+cd yieldsage-ai
 npm install
+```
 
-# Copy environment variables
+2. Copy env vars:
+```bash
 cp .env.local.example .env.local
+# Add your ANTHROPIC_API_KEY and HELIUS_API_KEY
+```
 
-# Run development server
+3. Run dev server:
+```bash
 npm run dev
 ```
 
-Visit **http://localhost:3000** to see the app!
+Open http://localhost:3000 and click "Try Demo" for the full experience without a wallet.
 
 ---
 
-## ✨ Demo Mode
+## Yield Score System
 
-**Demo mode is enabled by default** — no API keys or wallet connection required!
+The YieldSage Score (0-850) is calculated from four behavioral metrics:
 
-The demo showcases a realistic wallet profile:
+| Category | Max Points | Measures |
+|----------|-----------|---------|
+| Consistency | 297 | Days in protocol, monthly activity, no panic withdrawals |
+| Patience | 213 | Avg position duration, time in market |
+| Responsibility | 150 | No liquidations, reasonable leverage |
+| Engagement | 140 | Protocols used, governance participation |
 
-- **Wallet**: Sarah Chen (fictional user)
-- **Score**: 742 (GOOD tier)
-- **History**: 547 days of on-chain activity
-- **Loans**: 4 perfectly repaid (0 liquidations)
-- **Trading**: 234 trades with $45K profit
-- **LP**: 3 positions with 89% capital efficiency
-
-Toggle demo mode in the dashboard to connect your real wallet.
-
----
-
-## 📊 Scoring Methodology
-
-CredChain analyzes **20 on-chain signals** across 5 categories to generate a 0-850 score:
-
-| Category | Weight | Key Signals |
-|----------|--------|-------------|
-| **Loan Repayment** | 30% | Repayment rate, liquidation count, debt-to-income ratio, loan diversity |
-| **Wallet Maturity** | 20% | Account age, transaction consistency, balance stability, tenure score |
-| **Trading Behavior** | 20% | Win rate, risk-adjusted returns, position sizing, avg hold time |
-| **LP Commitment** | 15% | Liquidity duration, impermanent loss handling, capital efficiency |
-| **Community** | 15% | Governance participation, DAO contributions, reputation |
-
-### Score Tiers
-
-| Score | Tier | Description | Benefits |
-|-------|------|-------------|----------|
-| 0-549 | 🔴 Poor | High risk, limited DeFi usage | No benefits |
-| 550-649 | 🟡 Fair | Some responsible behavior | 5-10% fee discounts |
-| 650-749 | 🟢 Good | Consistent, trustworthy history | 80% LTV loans, priority support |
-| 750-850 | 💎 Excellent | Exceptional DeFi citizen | 70% LTV, 3% interest, DAO whitelist |
+| Tier | Score | Unlocks |
+|------|-------|---------|
+| New | 0-299 | Conservative strategy only |
+| Building | 300-499 | + Balanced strategy access |
+| Fair | 500-649 | + Growth strategy access |
+| Good | 650-749 | + Lower fees, priority support |
+| Excellent | 750+ | + Full protocol access, best rates |
 
 ---
 
-## 🪙 $CRED Token Utility
+## Strategy Tiers
 
-The native token powers the entire CredChain ecosystem:
+### Conservative — 10-14% APY
+- Protocol: Kamino Finance USDC-USDT stable pool
+- Risk: Level 1/5 — near-zero impermanent loss
+- Rebalance: Weekly
 
-### Earn $CRED
-- ✅ Mint your first score (+100 $CRED)
-- ✅ Maintain excellent score (+50 $CRED/month)
-- ✅ Refer new users (+25 $CRED per referral)
-- ✅ Report fraud (+200 $CRED bounty)
+### Balanced Growth — 15-22% APY
+- Protocol: Kamino 60% + Meteora DLMM 40%
+- Risk: Level 2/5 — low impermanent loss
+- Rebalance: Daily
 
-### Spend $CRED
-- 🔓 **Starter Tier** (50 $CRED/month): 3 analyses/month
-- 🔓 **Pro Tier** (200 $CRED/month): Unlimited analyses + comparisons
-- 🔓 **Elite Tier** (500 $CRED/month): Priority AI, API access, custom alerts
-
-### Protocol Revenue
-Protocols pay **0.1 $CRED per score query** to integrate CredChain data into their lending logic.
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      User Dashboard                          │
-│              (Next.js 14 + Tailwind + Framer)               │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   API Routes (Next.js)                       │
-│  • /api/analyze → Trigger AI analysis (SSE stream)          │
-│  • /api/score/calculate → Compute final score               │
-│  • /api/nft/mint → Mint credential NFT                      │
-└─────────────┬───────────────────────────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────────────────────────────────┐
-│              AI Agent (Claude Sonnet 4)                      │
-│  1. OBSERVE → Fetch wallet data via tools                   │
-│  2. THINK → Analyze patterns & detect risks                 │
-│  3. SCORE → Calculate 20 signals → 0-850 score             │
-│  4. MINT → Generate soulbound NFT credential                │
-│  5. RETURN → Stream reasoning back to UI                   │
-└─────────────┬───────────────────────────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Data Sources                              │
-│  • Helius RPC → Full transaction history                    │
-│  • Birdeye API → Token prices & trading data                │
-│  • Marginfi SDK → Loan positions & repayments               │
-│  • Solend SDK → Additional loan data                        │
-│  • Jupiter API → DEX trades & swap history                  │
-│  • Metaplex → NFT holdings & activity                       │
-└─────────────────────────────────────────────────────────────┘
-```
+### Aggressive Growth — 22-35% APY
+- Protocol: Meteora DLMM high-volume pools
+- Risk: Level 3/5 — moderate impermanent loss
+- Rebalance: Every 4 hours
 
 ---
 
-## 🛠️ Tech Stack
+## API Reference
 
-### Frontend
-- **Next.js 14** (App Router, Server Components, SSE streaming)
-- **TypeScript** (strict mode, comprehensive types)
-- **Tailwind CSS v4** (utility-first, custom design system)
-- **Framer Motion** (smooth animations, page transitions)
-- **Lucide React** (icon library)
-- **Recharts** (score visualizations)
-
-### Blockchain
-- **@solana/web3.js** (blockchain interactions)
-- **@solana/wallet-adapter-react** (wallet connection)
-- **@metaplex-foundation/js** (NFT minting)
-- **Helius RPC** (enriched transaction data)
-- **Marginfi SDK** (lending protocol integration)
-
-### AI & Backend
-- **@anthropic-ai/sdk** (Claude Sonnet 4 with tool use)
-- **Upstash Redis** (caching, rate limiting)
-- **Pinecone** (vector similarity search for comparisons)
-- **Birdeye API** (real-time token prices)
+POST /api/agent/analyze — Stream AI analysis (SSE)
+POST /api/agent/onboard — Get strategy recommendation
+GET  /api/score/:wallet — Fetch yield score
+GET  /api/wallet/balance?address=... — Wallet balances
+GET  /api/wallet/history?address=... — Transaction history
+GET  /api/cron/monitor — Automated position monitoring
 
 ---
 
-## 📡 API Documentation
+## Tech Stack
 
-### POST /api/analyze
-
-Trigger AI analysis for a wallet address.
-
-**Request:**
-```json
-{
-  "walletAddress": "7xKXt...abc123",
-  "demoMode": false
-}
-```
-
-**Response:** Server-Sent Events (SSE) stream
-
-```
-event: reasoning
-data: {"category":"loan_repayment","signal":"perfect_repayment_rate","value":1.0,"impact":"positive"}
-
-event: score
-data: {"score":742,"tier":"GOOD","categories":{...}}
-
-event: complete
-data: {"success":true}
-```
-
-### GET /api/score/[wallet]
-
-Public endpoint for protocols to query scores.
-
-**Response:**
-```json
-{
-  "score": 742,
-  "tier": "GOOD",
-  "timestamp": 1734526800000,
-  "credentialAddress": "nft_abc123...",
-  "verified": true
-}
-```
-
-### POST /api/nft/mint
-
-Mint a soulbound credential NFT.
-
-**Request:**
-```json
-{
-  "walletAddress": "7xKXt...abc123",
-  "score": 742,
-  "metadata": {...}
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "nftAddress": "nft_xyz789...",
-  "explorerUrl": "https://solscan.io/token/nft_xyz789..."
-}
-```
+- Framework: Next.js 16 (App Router)
+- Language: TypeScript 5
+- Styling: Tailwind CSS v4 with custom CSS design system
+- AI: Anthropic Claude claude-3-5-haiku-20241022 (SSE streaming)
+- Blockchain: Solana (@solana/web3.js, @solana/wallet-adapter-react)
+- Data: Helius Enhanced RPC API
+- Charts: Recharts
 
 ---
 
-## 🎨 Design System
+## License
 
-**Color Palette:**
-- **Background**: Near-black (#050810, #0a1628, #0f1f3a)
-- **Accent**: Gold (#c9a84c, #d4af37, #f4d03f)
-- **Primary Action**: Blue (#3b7dd8, #4a90e2)
-- **Success**: Green (#10b981, #34d399)
-- **Warning**: Amber (#f59e0b, #fbbf24)
-- **Error**: Red (#ef4444, #f87171)
-
-**Typography:**
-- **Display**: Playfair Display (luxury serif for headlines)
-- **Body**: DM Sans (clean sans-serif for UI)
-- **Monospace**: JetBrains Mono (for scores, data, addresses)
-
-**Effects:**
-- Glassmorphism cards with `backdrop-blur-xl`
-- Animated gradient backgrounds
-- Glow effects on score components
-- Grain texture overlay (3% opacity)
-- Smooth number counting animations
-
----
-
-## 🔒 Security & Privacy
-
-### Privacy First
-- **Zero PII**: We never store names, emails, or KYC data
-- **Public data only**: Analysis uses publicly available blockchain data
-- **User control**: Users can delete their score NFT anytime
-- **Opt-in**: Credential minting is optional
-
-### Smart Contract Security
-- **Non-transferable NFTs**: Soulbound credentials (no selling/transferring)
-- **Upgradeable logic**: Score calculation can evolve via governance
-- **Rate limiting**: Prevents spam and abuse
-- **Audit ready**: Code designed for professional security review
-
----
-
-## 🗺️ Roadmap
-
-### Phase 1: MVP (Current)
-- ✅ AI-powered scoring engine
-- ✅ Demo mode with realistic data
-- ✅ Landing page and dashboard
-- ✅ Core UI components
-- ⏳ API routes and backend integration
-- ⏳ Soulbound NFT minting
-
-### Phase 2: Mainnet Launch (Q2 2025)
-- Protocol integrations (Marginfi, Solend, Drift)
-- $CRED token launch via DeAura
-- Real-time score updates
-- Mobile app (React Native)
-
-### Phase 3: Expansion (Q3 2025)
-- Multi-chain support (Ethereum, Base, Arbitrum)
-- Credit score marketplace (lenders bid on borrowers)
-- AI explainability dashboard
-- Reputation-as-a-Service API
-
-### Phase 4: DAO Transition (Q4 2025)
-- Governance token migration
-- Community-driven signal weighting
-- Protocol revenue sharing
-- Decentralized dispute resolution
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Quick Links:**
-- Report bugs: [GitHub Issues](https://github.com/your-username/credchain-ai/issues)
-- Request features: [Discussions](https://github.com/your-username/credchain-ai/discussions)
-- Join Discord: [CredChain Community](https://discord.gg/credchain)
-
----
-
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-Built with love by the CredChain team for the Solana Builder House Hackathon 2024.
-
-Special thanks to:
-- **Anthropic** for Claude AI
-- **Helius** for best-in-class Solana RPC
-- **Marginfi** for lending protocol support
-- **Solana Foundation** for grants and mentorship
-
----
-
-## 📬 Contact
-
-- **Website**: https://credchain.ai (coming soon)
-- **Twitter**: [@CredChainAI](https://twitter.com/CredChainAI)
-- **Email**: team@credchain.ai
-- **Discord**: [Join our community](https://discord.gg/credchain)
-
----
-
-Made with 💙 on Solana
+MIT — Built for the Solana AI Hackathon 2025.
